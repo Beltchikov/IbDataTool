@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FmpDataTool.Ib;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -28,6 +29,9 @@ namespace IbDataTool
             PortIb = 4001;
             ConnectionString = Configuration.Instance["ConnectionString"];
             Log = "Willkommen!";
+
+            IBClient.Instance.Message += Instance_Message;
+            IBClient.Instance.FundamentalData += Instance_FundamentalData;
 
             CommandImportData = new RelayCommand((p) => ImportData(p));
         }
@@ -65,7 +69,19 @@ namespace IbDataTool
         /// <param name="p"></param>
         private void ImportData(object p)
         {
+            IBClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
+            IBClient.Instance.RequestFundamentals("IBKR", "USD");
+            //IBClient.Instance.Disonnect();
+        }
 
+        private void Instance_FundamentalData(IBSampleApp.messages.FundamentalsMessage obj)
+        {
+            
+        }
+
+        private void Instance_Message(object sender, string message)
+        {
+            Dispatcher.Invoke(() => { Log += message; });
         }
     }
 }
