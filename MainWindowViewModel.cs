@@ -12,6 +12,8 @@ namespace IbDataTool
     {
         public static readonly DependencyProperty PortIbProperty;
 
+        public RelayCommand CommandImportData { get; set; }
+
         static MainWindowViewModel()
         {
             PortIbProperty = DependencyProperty.Register("PortIb", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
@@ -20,6 +22,8 @@ namespace IbDataTool
         public MainWindowViewModel()
         {
             PortIb = 4001;
+
+            CommandImportData = new RelayCommand((p) => ImportData(p));
         }
 
         /// <summary>
@@ -31,7 +35,14 @@ namespace IbDataTool
             set { SetValue(PortIbProperty, value); }
         }
 
-
+        /// <summary>
+        /// ImportData
+        /// </summary>
+        /// <param name="p"></param>
+        private void ImportData(object p)
+        {
+            
+        }
 
 
     }
