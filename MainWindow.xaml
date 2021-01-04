@@ -15,9 +15,9 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="150"/>
             <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="110"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="10"/>
@@ -52,6 +52,14 @@
                 Grid.Row="1"
                 Margin="2,2,2,2"
                 Command="{Binding CommandImportData}"></Button>
+        <Label Content="Connectrion String:"
+               Grid.Row="2"
+               Grid.Column="3"></Label>
+        <TextBox x:Name="txtConnectionString" 
+                 Grid.Row="2"                
+                 Grid.Column="4" 
+                 Margin="2,2,2,2"
+                 Text="{Binding ConnectionString}"></TextBox>
         <!--<Grid Grid.Column="3" 
                        Grid.Row="1">
             <Grid.ColumnDefinitions>
