@@ -26,7 +26,7 @@ namespace IbDataTool
         public MainWindowViewModel()
         {
             PortIb = 4001;
-            ConnectionString = "TODO";
+            ConnectionString = Configuration.Instance["ConnectionString"];
             Log = "Willkommen!";
 
             CommandImportData = new RelayCommand((p) => ImportData(p));
