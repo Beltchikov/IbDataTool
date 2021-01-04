@@ -76,7 +76,7 @@ namespace IbDataTool
 
         private void Instance_FundamentalData(IBSampleApp.messages.FundamentalsMessage obj)
         {
-            
+            var xmlDocument = XmlFactory.Instance.CreateXml(obj);
         }
 
         private void Instance_Message(object sender, string message)
