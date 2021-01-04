@@ -35,8 +35,9 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
                        Grid.Row="2" Grid.RowSpan="2">
             <TextBox x:Name="txtSymbols" 
-                             TextWrapping="Wrap"
-                                     AcceptsReturn="True"></TextBox>
+                            TextWrapping="Wrap"
+                            AcceptsReturn="True"
+                            Text="{Binding Symbols}"></TextBox>
         </ScrollViewer>
         <Label Content="IB Port:"
                Grid.Column="3"
