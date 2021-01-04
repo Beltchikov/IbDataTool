@@ -12,6 +12,7 @@ namespace IbDataTool
     {
         public static readonly DependencyProperty PortIbProperty;
         public static readonly DependencyProperty ConnectionStringProperty;
+        public static readonly DependencyProperty LogProperty;
 
         public RelayCommand CommandImportData { get; set; }
 
@@ -19,12 +20,14 @@ namespace IbDataTool
         {
             PortIbProperty = DependencyProperty.Register("PortIb", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
             ConnectionStringProperty = DependencyProperty.Register("ConnectionString", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            LogProperty = DependencyProperty.Register("Log", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
         }
 
         public MainWindowViewModel()
         {
             PortIb = 4001;
-            ConnectionString= "TODO";
+            ConnectionString = "TODO";
+            Log = "Willkommen!";
 
             CommandImportData = new RelayCommand((p) => ImportData(p));
         }
@@ -38,14 +41,23 @@ namespace IbDataTool
             set { SetValue(PortIbProperty, value); }
         }
 
-
-
+        /// <summary>
+        /// ConnectionString
+        /// </summary>
         public string ConnectionString
         {
             get { return (string)GetValue(ConnectionStringProperty); }
             set { SetValue(ConnectionStringProperty, value); }
         }
 
+        /// <summary>
+        /// Log
+        /// </summary>
+        public string Log
+        {
+            get { return (string)GetValue(LogProperty); }
+            set { SetValue(LogProperty, value); }
+        }
 
         /// <summary>
         /// ImportData
@@ -55,7 +67,5 @@ namespace IbDataTool
         {
 
         }
-
-
     }
 }
