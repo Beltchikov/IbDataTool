@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace IbDataTool
@@ -37,10 +38,11 @@ namespace IbDataTool
 
             IBClient.Instance.Message += Instance_Message;
             IBClient.Instance.FundamentalData += Instance_FundamentalData;
+            IBClient.Instance.SymbolSamples += Instance_SymbolSamples;
 
             CommandImportData = new RelayCommand((p) => ImportData(p));
         }
-
+        
         /// <summary>
         /// PortIb
         /// </summary>
@@ -69,6 +71,11 @@ namespace IbDataTool
         }
 
         /// <summary>
+        /// IsLookingForSymbols
+        /// </summary>
+        public bool IsLookingForSymbols { get; set; }
+
+        /// <summary>
         /// Companies
         /// </summary>
         public string Companies
@@ -84,13 +91,30 @@ namespace IbDataTool
         private void ImportData(object p)
         {
             IBClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
-            IBClient.Instance.RequestFundamentals("IBKR", "USD");
+
+            var companiesArray = Companies.Split("\r\n");
+            foreach(var company in companiesArray)
+            {
+                //Log += $"\r\nLooking for symbol for company {company}";
+                //IsLookingForSymbols = true;
+                IBClient.Instance.LookForSymbols(company);
+                //while (IsLookingForSymbols) { };
+                //Log += $"\r\nOK! Finished looking for symbol for company {company}";
+
+                //IBClient.Instance.RequestFundamentals("IBKR", "USD");
+            }
+            
             //IBClient.Instance.Disonnect();
         }
 
         private void Instance_FundamentalData(IBSampleApp.messages.FundamentalsMessage obj)
         {
             var xmlDocument = XmlFactory.Instance.CreateXml(obj);
+        }
+
+        private void Instance_SymbolSamples(IBSampleApp.messages.SymbolSamplesMessage obj)
+        {
+            Dispatcher.Invoke(() => IsLookingForSymbols = false);
         }
 
         private void Instance_Message(object sender, string message)

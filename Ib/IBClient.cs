@@ -133,6 +133,11 @@ namespace FmpDataTool.Ib
             }
         }
 
+        public void LookForSymbols(string company)
+        {
+            ClientSocket.reqMatchingSymbols(++activeReqId, company);
+        }
+
         public Task<Contract> ResolveContractAsync(int conId, string refExch)
         {
             var reqId = new Random(DateTime.Now.Millisecond).Next();
@@ -248,6 +253,7 @@ namespace FmpDataTool.Ib
         }
 
         public bool IsConnectedIb { get; private set; }
+        public int activeReqId { get; private set; }
 
         public event Action<int, int, string, Exception> Error;
 
