@@ -72,7 +72,8 @@
                            Grid.Column="4"
                         ItemsSource="{Binding Exchanges}"
                               Width="250"
-                              HorizontalAlignment="Left">
+                              HorizontalAlignment="Left"
+                              SelectedItem="{Binding ExchangeSelected}">
                     </ComboBox>
                     <Label Content="Log:"
                Grid.Row="4"

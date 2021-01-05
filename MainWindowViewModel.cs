@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -19,10 +20,11 @@ namespace IbDataTool
         public static readonly DependencyProperty CompaniesProperty;
         public static readonly DependencyProperty SymbolsProperty;
         public static readonly DependencyProperty ExchangesProperty;
+        public static readonly DependencyProperty ExchangeSelectedProperty;
 
         public RelayCommand CommandImportData { get; set; }
         public RelayCommand CommandImportContracts { get; set; }
-        
+
 
         static MainWindowViewModel()
         {
@@ -32,7 +34,8 @@ namespace IbDataTool
             CompaniesProperty = DependencyProperty.Register("Companies", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             SymbolsProperty = DependencyProperty.Register("Symbols", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ExchangesProperty = DependencyProperty.Register("Exchanges", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
-    }
+            ExchangeSelectedProperty = DependencyProperty.Register("ExchangeSelected", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+        }
 
         public MainWindowViewModel()
         {
@@ -61,7 +64,7 @@ namespace IbDataTool
             var exchanges = Configuration.Instance["ExchangesNorthAmerica"].Split(",").ToList();
             exchanges.AddRange(Configuration.Instance["ExchangesAsia"].Split(",").ToList());
             exchanges.AddRange(Configuration.Instance["ExchangesEurope"].Split(",").ToList());
-            
+
             Exchanges = exchanges.Select(e => e.Trim()).ToList();
         }
 
@@ -115,7 +118,6 @@ namespace IbDataTool
             set { SetValue(SymbolsProperty, value); }
         }
 
-
         /// <summary>
         /// Exchanges
         /// </summary>
@@ -125,6 +127,16 @@ namespace IbDataTool
             set { SetValue(ExchangesProperty, value); }
         }
 
+        /// <summary>
+        /// ExchangeSelected
+        /// </summary>
+        public string ExchangeSelected
+        {
+            get { return (string)GetValue(ExchangeSelectedProperty); }
+            set { SetValue(ExchangeSelectedProperty, value); }
+        }
+
+        public string CurrentCompany { get; private set; }
 
         /// <summary>
         /// ImportData
@@ -158,11 +170,15 @@ namespace IbDataTool
             IBClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
 
             var companiesArray = Companies.Split("\r\n");
+            Log += $"\r\nStarting symbol import for {companiesArray.Count()} companies...";
             foreach (var company in companiesArray)
             {
-                IBClient.Instance.LookForSymbols(company);
+                CurrentCompany = company;
+                IBClient.Instance.LookForSymbols(CurrentCompany);
+                Thread.Sleep(1100);
             }
 
+            //Log += $"\r\n OK! Import completed.";
             //IBClient.Instance.Disonnect();
         }
 
@@ -173,7 +189,11 @@ namespace IbDataTool
 
         private void Instance_SymbolSamples(IBSampleApp.messages.SymbolSamplesMessage obj)
         {
-            Dispatcher.Invoke(() => IsLookingForSymbols = false);
+            Dispatcher.Invoke(() => {
+                Log += $"\r\n{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}";
+                });
+            var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeSelected);
+
         }
 
         private void Instance_Message(object sender, string message)
