@@ -14,7 +14,7 @@ namespace IbDataTool
         public static readonly DependencyProperty PortIbProperty;
         public static readonly DependencyProperty ConnectionStringProperty;
         public static readonly DependencyProperty LogProperty;
-        public static readonly DependencyProperty SymbolsProperty;
+        public static readonly DependencyProperty CompaniesProperty;
 
         public RelayCommand CommandImportData { get; set; }
 
@@ -23,7 +23,7 @@ namespace IbDataTool
             PortIbProperty = DependencyProperty.Register("PortIb", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
             ConnectionStringProperty = DependencyProperty.Register("ConnectionString", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             LogProperty = DependencyProperty.Register("Log", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-            SymbolsProperty = DependencyProperty.Register("Symbols", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            CompaniesProperty = DependencyProperty.Register("Companies", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
         }
 
         public MainWindowViewModel()
@@ -31,6 +31,9 @@ namespace IbDataTool
             PortIb = 4001;
             ConnectionString = Configuration.Instance["ConnectionString"];
             Log = "Willkommen!";
+
+            // TODO
+            Companies = "Xtract Resources PLC\r\nYellow Cake PLC\r\nYew Grove REIT PLC\r\nYourgene Health PLC\r\nYoung & Co's Brewery PLC";
 
             IBClient.Instance.Message += Instance_Message;
             IBClient.Instance.FundamentalData += Instance_FundamentalData;
@@ -66,12 +69,12 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// Symbols
+        /// Companies
         /// </summary>
-        public string Symbols
+        public string Companies
         {
-            get { return (string)GetValue(SymbolsProperty); }
-            set { SetValue(SymbolsProperty, value); }
+            get { return (string)GetValue(CompaniesProperty); }
+            set { SetValue(CompaniesProperty, value); }
         }
 
         /// <summary>
