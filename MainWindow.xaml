@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IbDataTool"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="900" Width="1400">
     <Window.Resources>
         <local:MainWindowViewModel x:Key="ViewModel" />
     </Window.Resources>
@@ -13,63 +13,131 @@
         <StaticResource ResourceKey="ViewModel" />
     </Window.DataContext>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="150"/>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="110"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="10"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="10"/>
-        </Grid.RowDefinitions>
-        <Label Grid.Column="1" 
-                       Grid.Row="1" Content="Symbols:"></Label>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
+        <TabControl>
+            <TabItem Header="IB Contracts">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="10"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="10"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="1" 
+                       Grid.Row="1" Content="Companies:"></Label>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
                        Grid.Row="2" Grid.RowSpan="3">
-            <TextBox x:Name="txtSymbols" 
+                        <TextBox x:Name="txtCompanies" 
                             TextWrapping="Wrap"
                             AcceptsReturn="True"
                             Text="{Binding Companies}"></TextBox>
-        </ScrollViewer>
-        <Label Content="IB Port:"
+                    </ScrollViewer>
+                    <Label Content="IB Port:"
                Grid.Column="3"
                Grid.Row="1"></Label>
-        <TextBox x:Name="txtPortIb" 
+                    <TextBox x:Name="txtPortIbContracts" 
                     Grid.Column="4"
                     Grid.Row="1"
                     Margin="2,2,2,2"
                     Width="100"
                     HorizontalAlignment="Left"
                     Text="{Binding PortIb}"></TextBox>
-        <Button Content="Import IB Data"
+                    <Button Content="Import IB Contracts"
                 Grid.Column="5"
                 Grid.Row="1"
                 Margin="2,2,2,2"
-                Command="{Binding CommandImportData}"></Button>
-        <Label Content="Connectrion String:"
+                Command="{Binding CommandImportContracts}"></Button>
+                    <Label Content="Connectrion String:"
                Grid.Row="2"
                Grid.Column="3"></Label>
-        <TextBox x:Name="txtConnectionString" 
+                    <TextBox x:Name="txtConnectionStringContracts" 
                  Grid.Row="2"                
                  Grid.Column="4" 
                  Margin="2,2,2,2"
                  Text="{Binding ConnectionString}"></TextBox>
-        <Label Content="Log:"
+                    <Label Content="Log:"
                Grid.Row="3"
                Grid.Column="3"></Label>
-        <TextBox x:Name="txtLogIb" 
+                    <TextBox x:Name="txtLogContracts" 
                Text="{Binding Log}"
                 Grid.Column="3" 
                 Grid.Row="4"
                 Grid.ColumnSpan="3"
                 Margin="2,2,2,2"></TextBox>
+                </Grid>
+            </TabItem>
+                <TabItem Header="IB Fundamentals">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="110"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="10"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="1" 
+                       Grid.Row="1" Content="Symbols:"></Label>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
+                       Grid.Row="2" Grid.RowSpan="3">
+                            <TextBox x:Name="txtSymbols" 
+                            TextWrapping="Wrap"
+                            AcceptsReturn="True"
+                            Text="{Binding Symbols}"></TextBox>
+                        </ScrollViewer>
+                        <Label Content="IB Port:"
+               Grid.Column="3"
+               Grid.Row="1"></Label>
+                        <TextBox x:Name="txtPortIb" 
+                    Grid.Column="4"
+                    Grid.Row="1"
+                    Margin="2,2,2,2"
+                    Width="100"
+                    HorizontalAlignment="Left"
+                    Text="{Binding PortIb}"></TextBox>
+                        <Button Content="Import IB Data"
+                Grid.Column="5"
+                Grid.Row="1"
+                Margin="2,2,2,2"
+                Command="{Binding CommandImportData}"></Button>
+                        <Label Content="Connectrion String:"
+               Grid.Row="2"
+               Grid.Column="3"></Label>
+                        <TextBox x:Name="txtConnectionString" 
+                 Grid.Row="2"                
+                 Grid.Column="4" 
+                 Margin="2,2,2,2"
+                 Text="{Binding ConnectionString}"></TextBox>
+                        <Label Content="Log:"
+               Grid.Row="3"
+               Grid.Column="3"></Label>
+                        <TextBox x:Name="txtLogIb" 
+               Text="{Binding Log}"
+                Grid.Column="3" 
+                Grid.Row="4"
+                Grid.ColumnSpan="3"
+                Margin="2,2,2,2"></TextBox>
+                    </Grid>
+                </TabItem>
+        </TabControl>
     </Grid>
 </Window>

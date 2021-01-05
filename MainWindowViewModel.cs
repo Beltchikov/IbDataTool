@@ -16,8 +16,11 @@ namespace IbDataTool
         public static readonly DependencyProperty ConnectionStringProperty;
         public static readonly DependencyProperty LogProperty;
         public static readonly DependencyProperty CompaniesProperty;
+        public static readonly DependencyProperty SymbolsProperty;
 
         public RelayCommand CommandImportData { get; set; }
+        public RelayCommand CommandImportContracts { get; set; }
+        
 
         static MainWindowViewModel()
         {
@@ -25,7 +28,8 @@ namespace IbDataTool
             ConnectionStringProperty = DependencyProperty.Register("ConnectionString", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             LogProperty = DependencyProperty.Register("Log", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             CompaniesProperty = DependencyProperty.Register("Companies", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-        }
+            SymbolsProperty = DependencyProperty.Register("Symbols", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+    }
 
         public MainWindowViewModel()
         {
@@ -41,6 +45,8 @@ namespace IbDataTool
             IBClient.Instance.SymbolSamples += Instance_SymbolSamples;
 
             CommandImportData = new RelayCommand((p) => ImportData(p));
+            CommandImportContracts = new RelayCommand((p) => ImportContracts(p));
+
         }
 
         /// <summary>
@@ -85,6 +91,15 @@ namespace IbDataTool
         }
 
         /// <summary>
+        /// Symbols
+        /// </summary>
+        public string Symbols
+        {
+            get { return (string)GetValue(SymbolsProperty); }
+            set { SetValue(SymbolsProperty, value); }
+        }
+
+        /// <summary>
         /// ImportData
         /// </summary>
         /// <param name="p"></param>
@@ -102,6 +117,23 @@ namespace IbDataTool
                 //Log += $"\r\nOK! Finished looking for symbol for company {company}";
 
                 //IBClient.Instance.RequestFundamentals("IBKR", "USD");
+            }
+
+            //IBClient.Instance.Disonnect();
+        }
+
+        /// <summary>
+        /// ImportContracts
+        /// </summary>
+        /// <param name="p"></param>
+        private void ImportContracts(object p)
+        {
+            IBClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
+
+            var companiesArray = Companies.Split("\r\n");
+            foreach (var company in companiesArray)
+            {
+                IBClient.Instance.LookForSymbols(company);
             }
 
             //IBClient.Instance.Disonnect();
