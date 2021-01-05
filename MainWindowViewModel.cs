@@ -1,6 +1,7 @@
 ﻿using FmpDataTool.Ib;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,6 +18,7 @@ namespace IbDataTool
         public static readonly DependencyProperty LogProperty;
         public static readonly DependencyProperty CompaniesProperty;
         public static readonly DependencyProperty SymbolsProperty;
+        public static readonly DependencyProperty ExchangesProperty;
 
         public RelayCommand CommandImportData { get; set; }
         public RelayCommand CommandImportContracts { get; set; }
@@ -29,13 +31,15 @@ namespace IbDataTool
             LogProperty = DependencyProperty.Register("Log", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             CompaniesProperty = DependencyProperty.Register("Companies", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             SymbolsProperty = DependencyProperty.Register("Symbols", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            ExchangesProperty = DependencyProperty.Register("Exchanges", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
     }
 
         public MainWindowViewModel()
         {
-            PortIb = 4001;
+            PortIb = Convert.ToInt32(Configuration.Instance["PortIb"]);
             ConnectionString = Configuration.Instance["ConnectionString"];
             Log = "Willkommen!";
+            InitExchangeCombobox();
 
             // TODO
             Companies = "Xtract Resources PLC\r\nYellow Cake PLC\r\nYew Grove REIT PLC\r\nYourgene Health PLC\r\nYoung & Co's Brewery PLC";
@@ -47,6 +51,18 @@ namespace IbDataTool
             CommandImportData = new RelayCommand((p) => ImportData(p));
             CommandImportContracts = new RelayCommand((p) => ImportContracts(p));
 
+        }
+
+        /// <summary>
+        /// InitExchangeCombobox
+        /// </summary>
+        private void InitExchangeCombobox()
+        {
+            var exchanges = Configuration.Instance["ExchangesNorthAmerica"].Split(",").ToList();
+            exchanges.AddRange(Configuration.Instance["ExchangesAsia"].Split(",").ToList());
+            exchanges.AddRange(Configuration.Instance["ExchangesEurope"].Split(",").ToList());
+            
+            Exchanges = exchanges.Select(e => e.Trim()).ToList();
         }
 
         /// <summary>
@@ -98,6 +114,17 @@ namespace IbDataTool
             get { return (string)GetValue(SymbolsProperty); }
             set { SetValue(SymbolsProperty, value); }
         }
+
+
+        /// <summary>
+        /// Exchanges
+        /// </summary>
+        public List<string> Exchanges
+        {
+            get { return (List<string>)GetValue(ExchangesProperty); }
+            set { SetValue(ExchangesProperty, value); }
+        }
+
 
         /// <summary>
         /// ImportData
