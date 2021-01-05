@@ -42,7 +42,7 @@ namespace IbDataTool
 
             CommandImportData = new RelayCommand((p) => ImportData(p));
         }
-        
+
         /// <summary>
         /// PortIb
         /// </summary>
@@ -93,7 +93,7 @@ namespace IbDataTool
             IBClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
 
             var companiesArray = Companies.Split("\r\n");
-            foreach(var company in companiesArray)
+            foreach (var company in companiesArray)
             {
                 //Log += $"\r\nLooking for symbol for company {company}";
                 //IsLookingForSymbols = true;
@@ -103,7 +103,7 @@ namespace IbDataTool
 
                 //IBClient.Instance.RequestFundamentals("IBKR", "USD");
             }
-            
+
             //IBClient.Instance.Disonnect();
         }
 
