@@ -204,7 +204,7 @@ namespace IbDataTool
 
         private void Instance_Message(object sender, string message)
         {
-            Dispatcher.Invoke(() => { Log += message; });
+            Dispatcher.Invoke(() => { Log += "\r\n"+message; });
         }
     }
 }

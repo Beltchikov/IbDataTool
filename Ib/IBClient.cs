@@ -72,7 +72,7 @@ namespace FmpDataTool.Ib
                     new Thread(() =>
                     {
                         var connectionMessageSent = false;
-                        while (this.ClientSocket.IsConnected())
+                        while (ClientSocket.IsConnected())
                         {
                             if (!connectionMessageSent)
                             {
@@ -81,7 +81,6 @@ namespace FmpDataTool.Ib
                             }
                             signal.waitForSignal();
                             reader.processMsgs();
-                            //var message = reader.get
                         }
                     })
                     { IsBackground = true }.Start();
