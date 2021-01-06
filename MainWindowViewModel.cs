@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using IbDataTool.Model;
 
 namespace IbDataTool
 {
@@ -149,6 +150,10 @@ namespace IbDataTool
 
         public string CurrentCompany { get; private set; }
 
+        public List<string> SymbolProcessed { get; set; }
+
+        public List<string> CompaniesList { get; set; }
+
         /// <summary>
         /// ImportData
         /// </summary>
@@ -183,11 +188,6 @@ namespace IbDataTool
                 Log += $"\r\nERROR! Exchange must be selected.";
                 return;
             }
-            if (!EnsureEmptyDatabase())
-            {
-                Log += $"\r\nOK! Import cancelled.";
-                return;
-            }
 
             BackgroundLog = Brushes.Gray;
             await Task.Run(() =>
@@ -202,12 +202,14 @@ namespace IbDataTool
 
                 IbClient.Instance.Connect(host, portIb, 1);
 
-                string[] companiesArray = null;
                 int delay = 0;
+                string[] companiesArray = null;
                 Dispatcher.Invoke(() =>
                 {
                     companiesArray = Companies.Split("\r\n");
+                    CompaniesList = companiesArray.ToList();
                     delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
+                    SymbolProcessed = new List<string>();
                 });
 
                 foreach (var company in companiesArray)
@@ -274,10 +276,28 @@ namespace IbDataTool
         /// <param name="obj"></param>
         private void SymbolSamplesHandler(IBSampleApp.messages.SymbolSamplesMessage obj)
         {
-            Log += $"\r\n{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}";
+            Log += $"\r\n{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}. {CompaniesList.Count()} companies more.";
+            CompaniesList.Remove(CurrentCompany);
             var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeSelected);
             Log += $"\r\n{contracts.Count()} symbols filtered out for company {CurrentCompany}";
-            DataContext.Instance.Contracts.AddRange(contracts);
+
+            try
+            {
+                for (int i = 0; i < contracts.Count(); i++)
+                {
+                    Contract contract = contracts[i];
+                    if (!SymbolProcessed.Any(s => s == contract.Symbol))
+                    {
+                        DataContext.Instance.Contracts.Add(contract);
+                        SymbolProcessed.Add(contract.Symbol);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Log += $"\r\n" + exception.ToString();
+            }
+
         }
 
         private void Instance_FundamentalData(IBSampleApp.messages.FundamentalsMessage obj)
