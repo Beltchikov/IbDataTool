@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace IbDataTool
 {
@@ -20,6 +21,7 @@ namespace IbDataTool
         public static readonly DependencyProperty SymbolsProperty;
         public static readonly DependencyProperty ExchangesProperty;
         public static readonly DependencyProperty ExchangeSelectedProperty;
+        public static readonly DependencyProperty BackgroundLogProperty;
 
         public RelayCommand CommandImportData { get; set; }
         public RelayCommand CommandImportContracts { get; set; }
@@ -33,25 +35,26 @@ namespace IbDataTool
             SymbolsProperty = DependencyProperty.Register("Symbols", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ExchangesProperty = DependencyProperty.Register("Exchanges", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             ExchangeSelectedProperty = DependencyProperty.Register("ExchangeSelected", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-        }
+            BackgroundLogProperty = DependencyProperty.Register("BackgroundLog", typeof(Brush), typeof(MainWindowViewModel), new PropertyMetadata(default(Brush)));
 
-        public MainWindowViewModel()
+    }
+
+    public MainWindowViewModel()
         {
             PortIb = Convert.ToInt32(Configuration.Instance["PortIb"]);
             ConnectionString = Configuration.Instance["ConnectionString"];
             Log = "Willkommen!";
+            BackgroundLog = Brushes.White;
             InitExchangeCombobox();
 
             // TODO
             Companies = "Xtract Resources PLC\r\nYellow Cake PLC\r\nYew Grove REIT PLC\r\nYourgene Health PLC\r\nYoung & Co's Brewery PLC";
 
-            IbClient.Instance.NextValidId += NextValidIdHandler;
-            //IbClient.Instance.FundamentalData += Instance_FundamentalData;
-            IbClient.Instance.SymbolSamples += SymbolSamplesHandler;
-
             CommandImportData = new RelayCommand((p) => ImportData(p));
-            CommandImportContracts = new RelayCommand((p) => ImportContracts(p));
+            CommandImportContracts = new RelayCommand(async (p) => await ImportContractsAsync(p));
 
+            IbClient.Instance.NextValidId += NextValidIdHandler;
+            IbClient.Instance.SymbolSamples += SymbolSamplesHandler;
         }
 
         /// <summary>
@@ -94,9 +97,9 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// IsLookingForSymbols
+        /// RequestPending
         /// </summary>
-        public bool IsLookingForSymbols { get; set; }
+        public bool RequestPending { get; set; }
 
         /// <summary>
         /// Companies
@@ -134,6 +137,15 @@ namespace IbDataTool
             set { SetValue(ExchangeSelectedProperty, value); }
         }
 
+        /// <summary>
+        /// BackgroundLog
+        /// </summary>
+        public Brush BackgroundLog
+        {
+            get { return (Brush)GetValue(BackgroundLogProperty); }
+            set { SetValue(BackgroundLogProperty, value); }
+        }
+
         public string CurrentCompany { get; private set; }
 
         /// <summary>
@@ -163,7 +175,7 @@ namespace IbDataTool
         /// ImportContracts
         /// </summary>
         /// <param name="p"></param>
-        private void ImportContracts(object p)
+        private async Task ImportContractsAsync(object p)
         {
             if (String.IsNullOrWhiteSpace(ExchangeSelected))
             {
@@ -171,16 +183,30 @@ namespace IbDataTool
                 return;
             }
 
-            IbClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
+            BackgroundLog = Brushes.Gray;
 
-            var companiesArray = Companies.Split("\r\n");
-            //Log += $"\r\nStarting symbol import for {companiesArray.Count()} companies...";
-            foreach (var company in companiesArray)
+            await Task.Run(() =>
             {
-                CurrentCompany = company;
-                IbClient.Instance.LookForSymbols(CurrentCompany);
-                Thread.Sleep(1100);
-            }
+                int portIb = 0;
+                string host = string.Empty;
+                Dispatcher.Invoke(() => {
+                    portIb = PortIb;
+                    host = Configuration.Instance["Localhost"];
+                    });
+
+                IbClient.Instance.Connect(host , portIb, 1);
+
+                string[] companiesArray = null;
+                Dispatcher.Invoke(() => companiesArray = Companies.Split("\r\n"));
+
+                foreach (var company in companiesArray)
+                {
+                    CurrentCompany = company;
+                    IbClient.Instance.LookForSymbols(CurrentCompany);
+                    Thread.Sleep(1100);
+                }
+            });
+            
 
             //Log += $"\r\n OK! Import completed.";
             //IBClient.Instance.Disonnect();
@@ -192,6 +218,7 @@ namespace IbDataTool
         /// <param name="obj"></param>
         private void NextValidIdHandler(IBSampleApp.messages.ConnectionStatusMessage obj)
         {
+            BackgroundLog = Brushes.White;
             var message = obj.IsConnected
                 ? "\r\nOK! Connected to IB server."
                 : "\r\nERROR! error connecting to IB server.";
