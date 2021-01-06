@@ -183,6 +183,11 @@ namespace IbDataTool
                 Log += $"\r\nERROR! Exchange must be selected.";
                 return;
             }
+            if (!EnsureEmptyDatabase())
+            {
+                Log += $"\r\nOK! Import cancelled.";
+                return;
+            }
 
             BackgroundLog = Brushes.Gray;
             await Task.Run(() =>
@@ -216,8 +221,30 @@ namespace IbDataTool
             Log += $"\r\nOK! Import completed.";
             DataContext.Instance.SaveChanges();
             Log += $"\r\nOK! Contracts saved in database.";
-
             IbClient.Instance.Disonnect();
+        }
+
+        /// <summary>
+        /// EnsureEmptyDatabase
+        /// </summary>
+        /// <returns></returns>
+        private bool EnsureEmptyDatabase()
+        {
+            if (DataContext.Instance.Contracts.Any())
+            {
+                MessageBoxResult messageBoxResult = MessageBox.Show("Database table 'Contracts' has already data. Do you want to overwrite it?", "Warning! Data exists!", MessageBoxButton.YesNo);
+                if (messageBoxResult == MessageBoxResult.Yes)
+                {
+                    DataContext.Instance.Contracts.RemoveRange(DataContext.Instance.Contracts);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
