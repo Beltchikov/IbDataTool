@@ -3,156 +3,35 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using IBApi;
+using IBSampleApp.messages;
 using System.Threading;
 using System.Threading.Tasks;
-using IBSampleApp.messages;
-using IBSampleApp;
 
-namespace FmpDataTool.Ib
+namespace IBSampleApp
 {
-    /// <summary>
-    /// IBClient
-    /// Class EClient is aggregated through EClientSocket
-    /// </summary>
-    public class IBClient : EWrapper
+    class IBClient : EWrapper
     {
-        private const int FUNDAMENTALS_ID = 60000002;
-        private const string SECURITY_TYPE_STOCK = "STK";
-        private const string EXCHANGE_SMART = "SMART";
-        private const string REPORT_TYPE_FIN_STATEMENTS = "ReportsFinStatements";
-
-        private static IBClient _ibClient;
-        private static readonly object lockObject = new object();
-        private static EReaderMonitorSignal signal;
         private EClientSocket clientSocket;
         private int nextOrderId;
         private int clientId;
-
-        public delegate void MessageDelegate(object sender, string message);
-        public event MessageDelegate Message;
-
-        IBClient() { }
-
-        /// <summary>
-        /// Instance
-        /// </summary>
-        public static IBClient Instance
-        {
-            get
-            {
-                lock (lockObject)
-                {
-                    if (_ibClient == null)
-                    {
-                        signal = new EReaderMonitorSignal();
-                        _ibClient = new IBClient(signal);
-                    }
-                    return _ibClient;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Connect
-        /// </summary>
-        /// <param name="host"></param>
-        /// <param name="portIb"></param>
-        /// <param name="clientIdIb"></param>
-        public void Connect(string host, int portIb, int clientIdIb)
-        {
-            if (!IsConnectedIb)
-            {
-                try
-                {
-                    ClientSocket.eConnect(host, portIb, clientIdIb);
-                    var reader = new EReader(ClientSocket, signal);
-                    reader.Start();
-                    new Thread(() =>
-                    {
-                        var connectionMessageSent = false;
-                        while (ClientSocket.IsConnected())
-                        {
-                            if (!connectionMessageSent)
-                            {
-                                Message.Invoke(this, "OK! Connection with IB server established.");
-                                connectionMessageSent = true;
-                            }
-                            signal.waitForSignal();
-                            reader.processMsgs();
-                        }
-                    })
-                    { IsBackground = true }.Start();
-                }
-                catch (Exception)
-                {
-                    Message.Invoke(this, "ERROR! Please check your IB connection attributes.");
-                }
-            }
-            else
-            {
-                IsConnectedIb = false;
-                ClientSocket.eDisconnect();
-            }
-        }
-
-        /// <summary>
-        /// Disonnect
-        /// </summary>
-        public void Disonnect()
-        {
-            try
-            {
-                Message.Invoke(this, "Disconecting...");
-                IsConnectedIb = false;
-                ClientSocket.eDisconnect();
-                Message.Invoke(this, "OK! Disconnected from IB server.");
-            }
-            catch (Exception exception)
-            {
-                Message.Invoke(this, exception.ToString());
-                throw exception;
-            }
-        }
-
-        public void RequestFundamentals(String symbol, string currency)
-        {
-            if (!fundamentalsRequestActive)
-            {
-                fundamentalsRequestActive = true;
-                Contract contract = new Contract
-                {
-                    SecType = SECURITY_TYPE_STOCK,
-                    Symbol = symbol,
-                    Currency = currency,
-                    Exchange = EXCHANGE_SMART
-                };
-                ClientSocket.reqFundamentalData(FUNDAMENTALS_ID, contract, REPORT_TYPE_FIN_STATEMENTS, new List<TagValue>());
-            }
-        }
-
-        public void LookForSymbols(string company)
-        {
-            ClientSocket.reqMatchingSymbols(++activeReqId, company);
-        }
 
         public Task<Contract> ResolveContractAsync(int conId, string refExch)
         {
             var reqId = new Random(DateTime.Now.Millisecond).Next();
             var resolveResult = new TaskCompletionSource<Contract>();
             var resolveContract_Error = new Action<int, int, string, Exception>((id, code, msg, ex) =>
-                {
-                    if (reqId != id)
-                        return;
+            {
+                if (reqId != id)
+                    return;
 
-                    resolveResult.SetResult(null);
-                });
+                resolveResult.SetResult(null);
+            });
             var resolveContract = new Action<ContractDetailsMessage>(msg =>
-                {
-                    if (msg.RequestId == reqId)
-                        resolveResult.SetResult(msg.ContractDetails.Contract);
-                });
+            {
+                if (msg.RequestId == reqId)
+                    resolveResult.SetResult(msg.ContractDetails.Contract);
+            });
             var contractDetailsEnd = new Action<int>(id =>
             {
                 if (reqId == id && !resolveResult.Task.IsCompleted)
@@ -185,24 +64,24 @@ namespace FmpDataTool.Ib
             var res = new TaskCompletionSource<Contract[]>();
             var contractList = new List<Contract>();
             var resolveContract_Error = new Action<int, int, string, Exception>((id, code, msg, ex) =>
-                {
-                    if (reqId != id)
-                        return;
+            {
+                if (reqId != id)
+                    return;
 
-                    res.SetResult(new Contract[0]);
-                });
+                res.SetResult(new Contract[0]);
+            });
             var contractDetails = new Action<ContractDetailsMessage>(msg =>
-                {
-                    if (reqId != msg.RequestId)
-                        return;
+            {
+                if (reqId != msg.RequestId)
+                    return;
 
-                    contractList.Add(msg.ContractDetails.Contract);
-                });
+                contractList.Add(msg.ContractDetails.Contract);
+            });
             var contractDetailsEnd = new Action<int>(id =>
-                {
-                    if (reqId == id)
-                        res.SetResult(contractList.ToArray());
-                });
+            {
+                if (reqId == id)
+                    res.SetResult(contractList.ToArray());
+            });
 
             var tmpError = Error;
             var tmpContractDetails = ContractDetails;
@@ -231,7 +110,6 @@ namespace FmpDataTool.Ib
         }
 
         SynchronizationContext sc;
-        private bool fundamentalsRequestActive;
 
         public IBClient(EReaderSignal signal)
         {
@@ -250,9 +128,6 @@ namespace FmpDataTool.Ib
             get { return nextOrderId; }
             set { nextOrderId = value; }
         }
-
-        public bool IsConnectedIb { get; private set; }
-        public int activeReqId { get; private set; }
 
         public event Action<int, int, string, Exception> Error;
 

@@ -1,5 +1,4 @@
-﻿using FmpDataTool.Ib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +24,6 @@ namespace IbDataTool
         public RelayCommand CommandImportData { get; set; }
         public RelayCommand CommandImportContracts { get; set; }
 
-
         static MainWindowViewModel()
         {
             PortIbProperty = DependencyProperty.Register("PortIb", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
@@ -47,9 +45,9 @@ namespace IbDataTool
             // TODO
             Companies = "Xtract Resources PLC\r\nYellow Cake PLC\r\nYew Grove REIT PLC\r\nYourgene Health PLC\r\nYoung & Co's Brewery PLC";
 
-            IBClient.Instance.Message += Instance_Message;
-            IBClient.Instance.FundamentalData += Instance_FundamentalData;
-            IBClient.Instance.SymbolSamples += Instance_SymbolSamples;
+            IbClient.Instance.NextValidId += NextValidIdHandler;
+            //IbClient.Instance.FundamentalData += Instance_FundamentalData;
+            IbClient.Instance.SymbolSamples += SymbolSamplesHandler;
 
             CommandImportData = new RelayCommand((p) => ImportData(p));
             CommandImportContracts = new RelayCommand((p) => ImportContracts(p));
@@ -144,14 +142,14 @@ namespace IbDataTool
         /// <param name="p"></param>
         private void ImportData(object p)
         {
-            IBClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
+            IbClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
 
             var companiesArray = Companies.Split("\r\n");
             foreach (var company in companiesArray)
             {
                 //Log += $"\r\nLooking for symbol for company {company}";
                 //IsLookingForSymbols = true;
-                IBClient.Instance.LookForSymbols(company);
+                IbClient.Instance.LookForSymbols(company);
                 //while (IsLookingForSymbols) { };
                 //Log += $"\r\nOK! Finished looking for symbol for company {company}";
 
@@ -167,20 +165,20 @@ namespace IbDataTool
         /// <param name="p"></param>
         private void ImportContracts(object p)
         {
-            if(String.IsNullOrWhiteSpace(ExchangeSelected))
+            if (String.IsNullOrWhiteSpace(ExchangeSelected))
             {
                 Log += $"\r\nERROR! Exchange must be selected.";
                 return;
             }
-            
-            IBClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
+
+            IbClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
 
             var companiesArray = Companies.Split("\r\n");
-            Log += $"\r\nStarting symbol import for {companiesArray.Count()} companies...";
+            //Log += $"\r\nStarting symbol import for {companiesArray.Count()} companies...";
             foreach (var company in companiesArray)
             {
                 CurrentCompany = company;
-                IBClient.Instance.LookForSymbols(CurrentCompany);
+                IbClient.Instance.LookForSymbols(CurrentCompany);
                 Thread.Sleep(1100);
             }
 
@@ -188,23 +186,30 @@ namespace IbDataTool
             //IBClient.Instance.Disonnect();
         }
 
+        /// <summary>
+        /// NextValidIdHandler
+        /// </summary>
+        /// <param name="obj"></param>
+        private void NextValidIdHandler(IBSampleApp.messages.ConnectionStatusMessage obj)
+        {
+            var message = obj.IsConnected
+                ? "\r\nOK! Connected to IB server."
+                : "\r\nERROR! error connecting to IB server.";
+            Log += message;
+        }
+
         private void Instance_FundamentalData(IBSampleApp.messages.FundamentalsMessage obj)
         {
             var xmlDocument = XmlFactory.Instance.CreateXml(obj);
         }
 
-        private void Instance_SymbolSamples(IBSampleApp.messages.SymbolSamplesMessage obj)
+        private void SymbolSamplesHandler(IBSampleApp.messages.SymbolSamplesMessage obj)
         {
-            Dispatcher.Invoke(() => {
-                Log += $"\r\n{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}";
-                });
+            Log += $"\r\n{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}";
+
+            // TODO
             var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeSelected);
 
-        }
-
-        private void Instance_Message(object sender, string message)
-        {
-            Dispatcher.Invoke(() => { Log += "\r\n"+message; });
         }
     }
 }
