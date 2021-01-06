@@ -167,6 +167,12 @@ namespace IbDataTool
         /// <param name="p"></param>
         private void ImportContracts(object p)
         {
+            if(String.IsNullOrWhiteSpace(ExchangeSelected))
+            {
+                Log += $"\r\nERROR! Exchange must be selected.";
+                return;
+            }
+            
             IBClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
 
             var companiesArray = Companies.Split("\r\n");

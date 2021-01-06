@@ -49,6 +49,11 @@ namespace IbDataTool
         {
             List<Contract> resultArray = new List<Contract>();
 
+            if(string.IsNullOrWhiteSpace(exchangeAndCurrency))
+            {
+                return resultArray;
+            }
+
             string[] exchangeAndCurrencyArray = exchangeAndCurrency.Split(" ");
             string exchange = exchangeAndCurrencyArray[0];
             string currency = exchangeAndCurrencyArray[1];
