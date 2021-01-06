@@ -199,13 +199,18 @@ namespace IbDataTool
                 IbClient.Instance.Connect(host, portIb, 1);
 
                 string[] companiesArray = null;
-                Dispatcher.Invoke(() => companiesArray = Companies.Split("\r\n"));
-
+                int delay = 0;
+                Dispatcher.Invoke(() => 
+                {
+                    companiesArray = Companies.Split("\r\n");
+                    delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
+                });
+                
                 foreach (var company in companiesArray)
                 {
                     CurrentCompany = company;
                     IbClient.Instance.LookForSymbols(CurrentCompany);
-                    Thread.Sleep(1100);
+                    Thread.Sleep(delay);
                 }
             });
 
