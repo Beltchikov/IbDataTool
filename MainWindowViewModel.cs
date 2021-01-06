@@ -37,9 +37,9 @@ namespace IbDataTool
             ExchangeSelectedProperty = DependencyProperty.Register("ExchangeSelected", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             BackgroundLogProperty = DependencyProperty.Register("BackgroundLog", typeof(Brush), typeof(MainWindowViewModel), new PropertyMetadata(default(Brush)));
 
-    }
+        }
 
-    public MainWindowViewModel()
+        public MainWindowViewModel()
         {
             PortIb = Convert.ToInt32(Configuration.Instance["PortIb"]);
             ConnectionString = Configuration.Instance["ConnectionString"];
@@ -54,6 +54,7 @@ namespace IbDataTool
             CommandImportContracts = new RelayCommand(async (p) => await ImportContractsAsync(p));
 
             IbClient.Instance.NextValidId += NextValidIdHandler;
+            IbClient.Instance.ConnectionClosed += ConnectionClosedHandler;
             IbClient.Instance.SymbolSamples += SymbolSamplesHandler;
         }
 
@@ -189,12 +190,13 @@ namespace IbDataTool
             {
                 int portIb = 0;
                 string host = string.Empty;
-                Dispatcher.Invoke(() => {
+                Dispatcher.Invoke(() =>
+                {
                     portIb = PortIb;
                     host = Configuration.Instance["Localhost"];
-                    });
+                });
 
-                IbClient.Instance.Connect(host , portIb, 1);
+                IbClient.Instance.Connect(host, portIb, 1);
 
                 string[] companiesArray = null;
                 Dispatcher.Invoke(() => companiesArray = Companies.Split("\r\n"));
@@ -206,10 +208,9 @@ namespace IbDataTool
                     Thread.Sleep(1100);
                 }
             });
-            
 
-            //Log += $"\r\n OK! Import completed.";
-            //IBClient.Instance.Disonnect();
+            Log += $"\r\nOK! Import completed.";
+            IbClient.Instance.Disonnect();
         }
 
         /// <summary>
@@ -225,18 +226,28 @@ namespace IbDataTool
             Log += message;
         }
 
-        private void Instance_FundamentalData(IBSampleApp.messages.FundamentalsMessage obj)
+        /// <summary>
+        /// ConnectionClosedHandler
+        /// </summary>
+        private void ConnectionClosedHandler()
         {
-            var xmlDocument = XmlFactory.Instance.CreateXml(obj);
+            Log += $"\r\nConnection to IB server closed.";
         }
 
+        /// <summary>
+        /// SymbolSamplesHandler
+        /// </summary>
+        /// <param name="obj"></param>
         private void SymbolSamplesHandler(IBSampleApp.messages.SymbolSamplesMessage obj)
         {
             Log += $"\r\n{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}";
-
-            // TODO
             var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeSelected);
+            Log += $"\r\n{contracts.Count()} symbols filtered out for company {CurrentCompany}";
+        }
 
+        private void Instance_FundamentalData(IBSampleApp.messages.FundamentalsMessage obj)
+        {
+            var xmlDocument = XmlFactory.Instance.CreateXml(obj);
         }
     }
 }
