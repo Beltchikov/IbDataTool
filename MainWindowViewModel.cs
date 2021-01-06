@@ -185,7 +185,6 @@ namespace IbDataTool
             }
 
             BackgroundLog = Brushes.Gray;
-
             await Task.Run(() =>
             {
                 int portIb = 0;
@@ -200,12 +199,12 @@ namespace IbDataTool
 
                 string[] companiesArray = null;
                 int delay = 0;
-                Dispatcher.Invoke(() => 
+                Dispatcher.Invoke(() =>
                 {
                     companiesArray = Companies.Split("\r\n");
                     delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
                 });
-                
+
                 foreach (var company in companiesArray)
                 {
                     CurrentCompany = company;
@@ -215,6 +214,9 @@ namespace IbDataTool
             });
 
             Log += $"\r\nOK! Import completed.";
+            DataContext.Instance.SaveChanges();
+            Log += $"\r\nOK! Contracts saved in database.";
+
             IbClient.Instance.Disonnect();
         }
 
@@ -248,6 +250,7 @@ namespace IbDataTool
             Log += $"\r\n{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}";
             var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeSelected);
             Log += $"\r\n{contracts.Count()} symbols filtered out for company {CurrentCompany}";
+            DataContext.Instance.Contracts.AddRange(contracts);
         }
 
         private void Instance_FundamentalData(IBSampleApp.messages.FundamentalsMessage obj)
