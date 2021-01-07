@@ -49,9 +49,6 @@ namespace IbDataTool
             BackgroundLog = Brushes.White;
             InitExchangeCombobox();
 
-            // TODO
-            Companies = "Xtract Resources PLC\r\nYellow Cake PLC\r\nYew Grove REIT PLC\r\nYourgene Health PLC\r\nYoung & Co's Brewery PLC";
-
             CommandImportData = new RelayCommand((p) => ImportData(p));
             CommandImportContracts = new RelayCommand(async (p) => await ImportContractsAsync(p));
 
