@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -31,7 +32,7 @@ namespace IbDataTool
         {
             PortIbProperty = DependencyProperty.Register("PortIb", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
             ConnectionStringProperty = DependencyProperty.Register("ConnectionString", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-            LogProperty = DependencyProperty.Register("Log", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            LogProperty = DependencyProperty.Register("Log", typeof(ObservableCollection<string>), typeof(MainWindowViewModel), new PropertyMetadata(new ObservableCollection<string>()));
             CompaniesProperty = DependencyProperty.Register("Companies", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             SymbolsProperty = DependencyProperty.Register("Symbols", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ExchangesProperty = DependencyProperty.Register("Exchanges", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
@@ -44,7 +45,7 @@ namespace IbDataTool
         {
             PortIb = Convert.ToInt32(Configuration.Instance["PortIb"]);
             ConnectionString = Configuration.Instance["ConnectionString"];
-            Log = "Willkommen!";
+            Log.Add("Willkommen");
             BackgroundLog = Brushes.White;
             InitExchangeCombobox();
 
@@ -92,9 +93,9 @@ namespace IbDataTool
         /// <summary>
         /// Log
         /// </summary>
-        public string Log
+        public ObservableCollection<string> Log
         {
-            get { return (string)GetValue(LogProperty); }
+            get { return (ObservableCollection<string>)GetValue(LogProperty); }
             set { SetValue(LogProperty, value); }
         }
 
@@ -185,7 +186,7 @@ namespace IbDataTool
         {
             if (String.IsNullOrWhiteSpace(ExchangeSelected))
             {
-                Log += $"\r\nERROR! Exchange must be selected.";
+                Log.Add($"ERROR! Exchange must be selected.");
                 return;
             }
 
@@ -220,9 +221,9 @@ namespace IbDataTool
                 }
             });
 
-            Log += $"\r\nOK! Import completed.";
+            Log.Add($"OK! Import completed.");
             DataContext.Instance.SaveChanges();
-            Log += $"\r\nOK! Contracts saved in database.";
+            Log.Add("OK! Contracts saved in database.");
             IbClient.Instance.Disonnect();
         }
 
@@ -257,9 +258,9 @@ namespace IbDataTool
         {
             BackgroundLog = Brushes.White;
             var message = obj.IsConnected
-                ? "\r\nOK! Connected to IB server."
-                : "\r\nERROR! error connecting to IB server.";
-            Log += message;
+                ? "OK! Connected to IB server."
+                : "ERROR! error connecting to IB server.";
+            Log.Add(message);
         }
 
         /// <summary>
@@ -267,7 +268,7 @@ namespace IbDataTool
         /// </summary>
         private void ConnectionClosedHandler()
         {
-            Log += $"\r\nConnection to IB server closed.";
+            Log.Add($"Connection to IB server closed.");
         }
 
         /// <summary>
@@ -276,10 +277,10 @@ namespace IbDataTool
         /// <param name="obj"></param>
         private void SymbolSamplesHandler(IBSampleApp.messages.SymbolSamplesMessage obj)
         {
-            Log += $"\r\n{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}. {CompaniesList.Count()} companies more.";
+            Log.Add($"{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}. {CompaniesList.Count()} companies more.");
             CompaniesList.Remove(CurrentCompany);
             var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeSelected);
-            Log += $"\r\n{contracts.Count()} symbols filtered out for company {CurrentCompany}";
+            Log.Add($"{contracts.Count()} symbols filtered out for company {CurrentCompany}");
 
             try
             {
@@ -295,7 +296,7 @@ namespace IbDataTool
             }
             catch (Exception exception)
             {
-                Log += $"\r\n" + exception.ToString();
+                Log.Add($"" + exception.ToString());
             }
 
         }
