@@ -152,6 +152,7 @@ namespace IbDataTool
         public string CurrentCompany { get; private set; }
 
         public List<string> SymbolProcessed { get; set; }
+        public List<string> CompaniesProcessed { get; set; }
 
         public List<string> CompaniesList { get; set; }
 
@@ -211,6 +212,7 @@ namespace IbDataTool
                     CompaniesList = companiesArray.ToList();
                     delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
                     SymbolProcessed = new List<string>();
+                    CompaniesProcessed = new List<string>();
                 });
 
                 foreach (var company in companiesArray)
@@ -284,6 +286,17 @@ namespace IbDataTool
 
             try
             {
+                if (!contracts.Any())
+                {
+                    if (!CompaniesProcessed.Any(s => s == CurrentCompany))
+                    {
+                        DataContext.Instance.NotResolved.Add(new NotResolved { Company = CurrentCompany });
+                        CompaniesProcessed.Add(CurrentCompany);
+                    }
+
+                    return;
+                }
+
                 for (int i = 0; i < contracts.Count(); i++)
                 {
                     Contract contract = contracts[i];
@@ -298,7 +311,6 @@ namespace IbDataTool
             {
                 Log.Add($"" + exception.ToString());
             }
-
         }
 
         private void Instance_FundamentalData(IBSampleApp.messages.FundamentalsMessage obj)

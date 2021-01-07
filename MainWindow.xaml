@@ -78,18 +78,11 @@
                     <Label Content="Log:"
                Grid.Row="4"
                Grid.Column="3"></Label>
-                    <!--<TextBox x:Name="txtLogContracts" 
-               Text="{Binding Log}"
-                Grid.Column="3" 
-                Grid.Row="5"
-                Grid.ColumnSpan="3"
-                Background="{Binding BackgroundLog}"
-                Margin="2,2,2,2"></TextBox>-->
                     <ListBox ItemsSource="{Binding Log}"
-                             Grid.Column="3" 
-                Grid.Row="5"
-                Grid.ColumnSpan="3">
-
+                    x:Name="listBoxLog"  
+                    Grid.Column="3" 
+                    Grid.Row="5"
+                    Grid.ColumnSpan="3">
                     </ListBox>
                 </Grid>
             </TabItem>
