@@ -80,6 +80,8 @@
                Grid.Column="3"></Label>
                     <ListBox ItemsSource="{Binding Log}"
                     x:Name="listBoxLog"  
+                    Background="{Binding BackgroundLog}"
+                             Loaded="listBoxLog_Loaded"
                     Grid.Column="3" 
                     Grid.Row="5"
                     Grid.ColumnSpan="3">
