@@ -302,35 +302,60 @@ namespace IbDataTool
             {
                 if (!contracts.Any())
                 {
-                    if (!CompaniesProcessed.Any(s => s == CurrentCompany))
-                    {
-                        DataContext.Instance.NotResolved.Add(new NotResolved { Company = CurrentCompany });
-                    }
-
-                    CompaniesProcessed.Add(CurrentCompany);
+                    ProcessNotResolved();
                     return;
                 }
 
-                for (int i = 0; i < contracts.Count(); i++)
-                {
-                    Contract contract = contracts[i];
-                    if (!SymbolProcessed.Any(s => s == contract.Symbol))
-                    {
-                        DataContext.Instance.Contracts.Add(contract);
-                        SymbolProcessed.Add(contract.Symbol);
-                    }
-                }
-
-                CompaniesProcessed.Add(CurrentCompany);
-                if (CompaniesProcessed.Count() > 0 && CompaniesProcessed.Count() % Convert.ToInt32(Configuration.Instance["BatchSizeDatabase"]) == 0)
-                {
-                    DataContext.Instance.SaveChanges();
-                    Log.Add("OK! Current batch saved in database.");
-                }
+                ProcessResolved(contracts);
+                ProcessDatabaseBatch();
             }
             catch (Exception exception)
             {
-                Log.Add($"" + exception.ToString());
+                Log.Add(exception.ToString());
+            }
+        }
+
+        /// <summary>
+        /// ProcessResolved
+        /// </summary>
+        /// <param name="contracts"></param>
+        private void ProcessResolved(IList<Contract> contracts)
+        {
+            for (int i = 0; i < contracts.Count(); i++)
+            {
+                Contract contract = contracts[i];
+                if (!SymbolProcessed.Any(s => s == contract.Symbol))
+                {
+                    DataContext.Instance.Contracts.Add(contract);
+                    SymbolProcessed.Add(contract.Symbol);
+                }
+            }
+
+            CompaniesProcessed.Add(CurrentCompany);
+        }
+
+        /// <summary>
+        /// ProcessNotResolved
+        /// </summary>
+        private void ProcessNotResolved()
+        {
+            if (!CompaniesProcessed.Any(s => s == CurrentCompany))
+            {
+                DataContext.Instance.NotResolved.Add(new NotResolved { Company = CurrentCompany });
+            }
+
+            CompaniesProcessed.Add(CurrentCompany);
+        }
+
+        /// <summary>
+        /// ProcessDatabaseBatch
+        /// </summary>
+        private void ProcessDatabaseBatch()
+        {
+            if (CompaniesProcessed.Count() > 0 && CompaniesProcessed.Count() % Convert.ToInt32(Configuration.Instance["BatchSizeDatabase"]) == 0)
+            {
+                DataContext.Instance.SaveChanges();
+                Log.Add("OK! Current batch saved in database.");
             }
         }
 
