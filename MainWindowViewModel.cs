@@ -149,12 +149,26 @@ namespace IbDataTool
             set { SetValue(BackgroundLogProperty, value); }
         }
 
+        /// <summary>
+        /// CompaniesList
+        /// </summary>
+        public List<string> CompaniesList { get; set; }
+
+        /// <summary>
+        /// CurrentCompany
+        /// </summary>
         public string CurrentCompany { get; private set; }
 
-        public List<string> SymbolProcessed { get; set; }
+        /// <summary>
+        /// CompaniesProcessed
+        /// </summary>
         public List<string> CompaniesProcessed { get; set; }
 
-        public List<string> CompaniesList { get; set; }
+        /// <summary>
+        /// SymbolProcessed
+        /// </summary>
+        public List<string> SymbolProcessed { get; set; }
+
 
         /// <summary>
         /// ImportData
@@ -225,7 +239,7 @@ namespace IbDataTool
 
             Log.Add($"OK! Import completed.");
             DataContext.Instance.SaveChanges();
-            Log.Add("OK! Contracts saved in database.");
+            Log.Add("OK! All contracts saved in database.");
             IbClient.Instance.Disonnect();
         }
 
@@ -291,9 +305,9 @@ namespace IbDataTool
                     if (!CompaniesProcessed.Any(s => s == CurrentCompany))
                     {
                         DataContext.Instance.NotResolved.Add(new NotResolved { Company = CurrentCompany });
-                        CompaniesProcessed.Add(CurrentCompany);
                     }
 
+                    CompaniesProcessed.Add(CurrentCompany);
                     return;
                 }
 
@@ -305,6 +319,13 @@ namespace IbDataTool
                         DataContext.Instance.Contracts.Add(contract);
                         SymbolProcessed.Add(contract.Symbol);
                     }
+                }
+
+                CompaniesProcessed.Add(CurrentCompany);
+                if (CompaniesProcessed.Count() > 0 && CompaniesProcessed.Count() % Convert.ToInt32(Configuration.Instance["BatchSizeDatabase"]) == 0)
+                {
+                    DataContext.Instance.SaveChanges();
+                    Log.Add("OK! Current batch saved in database.");
                 }
             }
             catch (Exception exception)
