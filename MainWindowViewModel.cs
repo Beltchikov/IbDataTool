@@ -326,6 +326,11 @@ namespace IbDataTool
                 Contract contract = contracts[i];
                 if (!SymbolProcessed.Any(s => s == contract.Symbol))
                 {
+                    if (DataContext.Instance.Contracts.Any(c => c.Symbol == contract.Symbol))
+                    {
+                        Log.Add($"Symbol {contract.Symbol} exists already in database table Contracts.");
+                        continue;
+                    }
                     DataContext.Instance.Contracts.Add(contract);
                     SymbolProcessed.Add(contract.Symbol);
                 }
@@ -341,6 +346,12 @@ namespace IbDataTool
         {
             if (!CompaniesProcessed.Any(s => s == CurrentCompany))
             {
+                if (DataContext.Instance.NotResolved.Any(n => n.Company == CurrentCompany))
+                {
+                    Log.Add($"Company {CurrentCompany} exists already in database table NotResolved.");
+                    return;
+                }
+                
                 DataContext.Instance.NotResolved.Add(new NotResolved { Company = CurrentCompany });
             }
 
