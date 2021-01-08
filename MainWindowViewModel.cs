@@ -198,6 +198,8 @@ namespace IbDataTool
             var companiesWithoutDocuments = companiesWithoutIncome.Union(companiesWithoutBalance).Union(companiesWithoutCash);
             companiesWithoutDocuments = companiesWithoutDocuments.Where(c => !string.IsNullOrWhiteSpace(c)).ToList();
 
+            var companiesWithExactOneIbSymbol = QueryFactory.CompaniesWithExactOneIbSymbolQuery.Run();
+
 
             IbClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
 
