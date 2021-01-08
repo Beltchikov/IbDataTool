@@ -41,7 +41,7 @@ namespace IbDataTool
             ExchangeSelectedProperty = DependencyProperty.Register("ExchangeSelected", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             BackgroundLogProperty = DependencyProperty.Register("BackgroundLog", typeof(Brush), typeof(MainWindowViewModel), new PropertyMetadata(default(Brush)));
             DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-    }
+        }
 
         public MainWindowViewModel()
         {
@@ -53,7 +53,7 @@ namespace IbDataTool
 
             InitExchangeCombobox();
 
-            CommandImportFundamentals = new RelayCommand((p) => ImportFundamentals(p));
+            CommandImportFundamentals = new RelayCommand(async (p) => await ImportFundamentalsAsync(p));
             CommandImportContracts = new RelayCommand(async (p) => await ImportContractsAsync(p));
 
             IbClient.Instance.NextValidId += NextValidIdHandler;
@@ -189,27 +189,40 @@ namespace IbDataTool
         /// ImportFundamentals
         /// </summary>
         /// <param name="p"></param>
-        private void ImportFundamentals(object p)
+        private async Task ImportFundamentalsAsync(object p)
         {
             var companiesToProcess = CompaniesForIbFundamentalsQueries();
-
-            IbClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
-
-
-
-            var companiesArray = Companies.Split("\r\n");
-            foreach (var company in companiesArray)
+            if (companiesToProcess.Any())
             {
-                //Log += $"\r\nLooking for symbol for company {company}";
-                //IsLookingForSymbols = true;
-                IbClient.Instance.LookForSymbols(company);
-                //while (IsLookingForSymbols) { };
-                //Log += $"\r\nOK! Finished looking for symbol for company {company}";
-
-                //IBClient.Instance.RequestFundamentals("IBKR", "USD");
+                // TODO Log
+                return;
             }
 
-            //IBClient.Instance.Disonnect();
+            // Log.Clear();   // TODO
+            BackgroundLog = Brushes.Gray;
+            await Task.Run(() =>
+            {
+                int portIb = 0;
+                string host = string.Empty;
+                int delay = 0;
+                Dispatcher.Invoke(() =>
+                {
+                    portIb = PortIb;
+                    host = Configuration.Instance["Localhost"];
+                    delay = Convert.ToInt32(Configuration.Instance["DelayFundamentals"]);
+                });
+
+                IbClient.Instance.Connect(host, portIb, 1);
+
+                foreach (var company in companiesToProcess)
+                {
+                    CurrentCompany = company;
+                    IbClient.Instance.LookForSymbols(company);
+                    Thread.Sleep(delay);
+                }
+            });
+
+            IbClient.Instance.Disonnect();
         }
 
         /// <summary>
@@ -289,7 +302,7 @@ namespace IbDataTool
                 Log.Add("OK! All contracts saved in database.");
                 IbClient.Instance.Disonnect();
             }
-            else 
+            else
             {
                 Log.Add($"ERROR! Error while connection to IB server.");
             }
@@ -335,7 +348,7 @@ namespace IbDataTool
             }
             else
             {
-                ConnectedToIb = false; 
+                ConnectedToIb = false;
                 message = "ERROR! error connecting to IB server.";
             }
 
