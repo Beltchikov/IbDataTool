@@ -45,11 +45,11 @@ namespace IbDataTool
         {
             PortIb = Convert.ToInt32(Configuration.Instance["PortIb"]);
             ConnectionString = Configuration.Instance["ConnectionString"];
-            Log.Add("Willkommen");
+            Log.Add("Willkommen! Enjoy the day (-:");
             BackgroundLog = Brushes.White;
             InitExchangeCombobox();
 
-            CommandImportData = new RelayCommand((p) => ImportData(p));
+            CommandImportData = new RelayCommand((p) => ImportFundamentals(p));
             CommandImportContracts = new RelayCommand(async (p) => await ImportContractsAsync(p));
 
             IbClient.Instance.NextValidId += NextValidIdHandler;
@@ -168,10 +168,10 @@ namespace IbDataTool
 
 
         /// <summary>
-        /// ImportData
+        /// ImportFundamentals
         /// </summary>
         /// <param name="p"></param>
-        private void ImportData(object p)
+        private void ImportFundamentals(object p)
         {
             IbClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
 
@@ -202,35 +202,43 @@ namespace IbDataTool
                 return;
             }
 
+            Log.Clear();
             BackgroundLog = Brushes.Gray;
             await Task.Run(() =>
             {
-                int portIb = 0;
-                string host = string.Empty;
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    portIb = PortIb;
-                    host = Configuration.Instance["Localhost"];
-                });
+                    int portIb = 0;
+                    string host = string.Empty;
+                    Dispatcher.Invoke(() =>
+                    {
+                        portIb = PortIb;
+                        host = Configuration.Instance["Localhost"];
+                    });
 
-                IbClient.Instance.Connect(host, portIb, 1);
+                    IbClient.Instance.Connect(host, portIb, 1);
 
-                int delay = 0;
-                string[] companiesArray = null;
-                Dispatcher.Invoke(() =>
+                    int delay = 0;
+                    string[] companiesArray = null;
+                    Dispatcher.Invoke(() =>
+                    {
+                        companiesArray = Companies.Split("\r\n").Select(e => e.Trim()).Distinct().ToArray();
+                        CompaniesList = companiesArray.ToList();
+                        delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
+                        SymbolProcessed = new List<string>();
+                        CompaniesProcessed = new List<string>();
+                    });
+
+                    foreach (var company in companiesArray)
+                    {
+                        CurrentCompany = company;
+                        IbClient.Instance.LookForSymbols(CurrentCompany);
+                        Thread.Sleep(delay);
+                    }
+                }
+                catch (Exception exception)
                 {
-                    companiesArray = Companies.Split("\r\n").Select(e => e.Trim()).Distinct().ToArray();
-                    CompaniesList = companiesArray.ToList();
-                    delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
-                    SymbolProcessed = new List<string>();
-                    CompaniesProcessed = new List<string>();
-                });
-
-                foreach (var company in companiesArray)
-                {
-                    CurrentCompany = company;
-                    IbClient.Instance.LookForSymbols(CurrentCompany);
-                    Thread.Sleep(delay);
+                    Dispatcher.Invoke(() => { Log.Add(exception.ToString()); });
                 }
             });
 
@@ -238,6 +246,7 @@ namespace IbDataTool
             DataContext.Instance.SaveChanges();
             Log.Add("OK! All contracts saved in database.");
             IbClient.Instance.Disonnect();
+
         }
 
         /// <summary>
@@ -349,7 +358,7 @@ namespace IbDataTool
                     Log.Add($"Company {CurrentCompany} exists already in database table NotResolved.");
                     return;
                 }
-                
+
                 DataContext.Instance.NotResolved.Add(new NotResolved { Company = CurrentCompany });
             }
 
