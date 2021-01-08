@@ -191,15 +191,7 @@ namespace IbDataTool
         /// <param name="p"></param>
         private void ImportFundamentals(object p)
         {
-            var companiesWithoutIncome = QueryFactory.CompaniesWithoutIncomeQuery.Run(Date);
-            var companiesWithoutBalance = QueryFactory.CompaniesWithoutBalanceQuery.Run(Date);
-            var companiesWithoutCash = QueryFactory.CompaniesWithoutCashQuery.Run(Date);
-
-            var companiesWithoutDocuments = companiesWithoutIncome.Union(companiesWithoutBalance).Union(companiesWithoutCash);
-            companiesWithoutDocuments = companiesWithoutDocuments.Where(c => !string.IsNullOrWhiteSpace(c)).ToList();
-
-            var companiesWithExactOneIbSymbol = QueryFactory.CompaniesWithExactOneIbSymbolQuery.Run();
-
+            var companiesToProcess = CompaniesForIbFundamentalsQueries();
 
             IbClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
 
@@ -218,6 +210,24 @@ namespace IbDataTool
             }
 
             //IBClient.Instance.Disonnect();
+        }
+
+        /// <summary>
+        /// CompaniesForIbFundamentalsQueries
+        /// </summary>
+        /// <returns></returns>
+        List<string> CompaniesForIbFundamentalsQueries()
+        {
+            var companiesWithoutIncome = QueryFactory.CompaniesWithoutIncomeQuery.Run(Date);
+            var companiesWithoutBalance = QueryFactory.CompaniesWithoutBalanceQuery.Run(Date);
+            var companiesWithoutCash = QueryFactory.CompaniesWithoutCashQuery.Run(Date);
+
+            var companiesWithoutDocuments = companiesWithoutIncome.Union(companiesWithoutBalance).Union(companiesWithoutCash);
+            companiesWithoutDocuments = companiesWithoutDocuments.Where(c => !string.IsNullOrWhiteSpace(c)).ToList();
+
+            var companiesWithExactOneIbSymbol = QueryFactory.CompaniesWithExactOneIbSymbolQuery.Run();
+            var companiesToProcess = companiesWithoutDocuments.Intersect(companiesWithExactOneIbSymbol).ToList();
+            return companiesToProcess;
         }
 
         /// <summary>
