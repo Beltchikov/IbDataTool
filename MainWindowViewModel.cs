@@ -166,6 +166,11 @@ namespace IbDataTool
         /// </summary>
         public List<string> SymbolProcessed { get; set; }
 
+        /// <summary>
+        /// ConnectedToIb
+        /// </summary>
+        public bool ConnectedToIb { get; set; }
+
 
         /// <summary>
         /// ImportFundamentals
@@ -242,10 +247,17 @@ namespace IbDataTool
                 }
             });
 
-            Log.Add($"OK! Import completed.");
-            DataContext.Instance.SaveChanges();
-            Log.Add("OK! All contracts saved in database.");
-            IbClient.Instance.Disonnect();
+            if (ConnectedToIb)
+            {
+                Log.Add($"OK! Import completed.");
+                DataContext.Instance.SaveChanges();
+                Log.Add("OK! All contracts saved in database.");
+                IbClient.Instance.Disonnect();
+            }
+            else 
+            {
+                Log.Add($"ERROR! Error while connection to IB server.");
+            }
 
         }
 
@@ -279,9 +291,19 @@ namespace IbDataTool
         private void NextValidIdHandler(IBSampleApp.messages.ConnectionStatusMessage obj)
         {
             BackgroundLog = Brushes.White;
-            var message = obj.IsConnected
-                ? "OK! Connected to IB server."
-                : "ERROR! error connecting to IB server.";
+            var message = string.Empty;
+
+            if (obj.IsConnected)
+            {
+                ConnectedToIb = true;
+                message = "OK! Connected to IB server.";
+            }
+            else
+            {
+                ConnectedToIb = false; 
+                message = "ERROR! error connecting to IB server.";
+            }
+
             Log.Add(message);
         }
 
