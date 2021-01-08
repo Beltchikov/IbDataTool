@@ -219,7 +219,7 @@ namespace IbDataTool
                 string[] companiesArray = null;
                 Dispatcher.Invoke(() =>
                 {
-                    companiesArray = Companies.Split("\r\n");
+                    companiesArray = Companies.Split("\r\n").Select(e => e.Trim()).Distinct().ToArray();
                     CompaniesList = companiesArray.ToList();
                     delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
                     SymbolProcessed = new List<string>();
@@ -300,6 +300,7 @@ namespace IbDataTool
                 if (!contracts.Any())
                 {
                     ProcessNotResolved();
+                    ProcessDatabaseBatch();
                     return;
                 }
 
@@ -321,7 +322,7 @@ namespace IbDataTool
             for (int i = 0; i < contracts.Count(); i++)
             {
                 Contract contract = contracts[i];
-                if (!SymbolProcessed.Any(s => s == contract.Symbol))
+                if (!SymbolProcessed.Any(s => s.ToUpper() == contract.Symbol.ToUpper()))
                 {
                     if (DataContext.Instance.Contracts.Any(c => c.Symbol == contract.Symbol))
                     {
@@ -341,7 +342,7 @@ namespace IbDataTool
         /// </summary>
         private void ProcessNotResolved()
         {
-            if (!CompaniesProcessed.Any(s => s == CurrentCompany))
+            if (!CompaniesProcessed.Any(s => s.ToUpper() == CurrentCompany.ToUpper()))
             {
                 if (DataContext.Instance.NotResolved.Any(n => n.Company == CurrentCompany))
                 {
@@ -360,7 +361,8 @@ namespace IbDataTool
         /// </summary>
         private void ProcessDatabaseBatch()
         {
-            if (CompaniesProcessed.Count() > 0 && CompaniesProcessed.Count() % Convert.ToInt32(Configuration.Instance["BatchSizeDatabase"]) == 0)
+            if (CompaniesProcessed.Count() > 0 && CompaniesProcessed.Count() % Convert.ToInt32(Configuration.Instance["BatchSizeDatabase"]) == 0
+                || CompaniesList.Count() == 0)
             {
                 DataContext.Instance.SaveChanges();
                 Log.Add("OK! Current batch saved in database.");
