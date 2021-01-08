@@ -178,7 +178,11 @@ namespace IbDataTool
         /// <param name="p"></param>
         private void ImportFundamentals(object p)
         {
+            //var companiesWithoutFundamentals = DataContext.Instance.
+            
             IbClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
+
+
 
             var companiesArray = Companies.Split("\r\n");
             foreach (var company in companiesArray)
