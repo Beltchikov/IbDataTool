@@ -7,9 +7,9 @@ using IbDataTool.Model;
 namespace IbDataTool.Queries
 {
     /// <summary>
-    /// CompaniesWithoutDocumentQuery
+    /// Returns companies without cash flow statement sheet.
     /// </summary>
-    public class CompaniesWithoutDocumentQuery : DataContext
+    public class CompaniesWithoutCashQuery : DataContext
     {
         
         /// <summary>
@@ -20,11 +20,11 @@ namespace IbDataTool.Queries
         public List<string> Run(string date)
         {
             return (from stock in Stocks
-                    join income in IncomeStatements
-                    on new { a = stock.Symbol, b = date } equals new { a = income.Symbol, b = income.Date }
-                    into stockAndIncomeRecords
-                    from stockAndIncome in stockAndIncomeRecords.DefaultIfEmpty()
-                    where stockAndIncome == null
+                    join cash in CashFlowStatements
+                    on new { a = stock.Symbol, b = date } equals new { a = cash.Symbol, b = cash.Date }
+                    into stockAndCashRecords
+                    from stockAndCash in stockAndCashRecords.DefaultIfEmpty()
+                    where stockAndCash == null
                     select stock.Name).ToList();
         }
     }

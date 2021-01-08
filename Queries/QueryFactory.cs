@@ -11,28 +11,63 @@ namespace IbDataTool.Queries
     {
         private static readonly object lockObject = new object();
 
-        private static CompaniesWithoutDocumentQuery _companiesWithoutDocumentQuery;
+        private static CompaniesWithoutIncomeQuery _companiesWithoutIncomeQuery;
+        private static CompaniesWithoutBalanceQuery _companiesWithoutBalanceQuery;
+        private static CompaniesWithoutCashQuery _companiesWithoutCashQuery;
 
 
         /// <summary>
-        /// CompaniesWithoutDocumentQuery
+        /// CompaniesWithoutIncomeQuery
         /// </summary>
-        public static CompaniesWithoutDocumentQuery CompaniesWithoutDocumentQuery
+        public static CompaniesWithoutIncomeQuery CompaniesWithoutIncomeQuery
         {
             get
             {
                 lock (lockObject)
                 {
-                    if (_companiesWithoutDocumentQuery == null)
+                    if (_companiesWithoutIncomeQuery == null)
                     {
-                        _companiesWithoutDocumentQuery = new CompaniesWithoutDocumentQuery();
+                        _companiesWithoutIncomeQuery = new CompaniesWithoutIncomeQuery();
                     }
-                    return _companiesWithoutDocumentQuery;
+                    return _companiesWithoutIncomeQuery;
                 }
             }
         }
 
-        
+        /// <summary>
+        /// CompaniesWithoutBalanceQuery
+        /// </summary>
+        public static CompaniesWithoutBalanceQuery CompaniesWithoutBalanceQuery
+        {
+            get
+            {
+                lock (lockObject)
+                {
+                    if (_companiesWithoutBalanceQuery == null)
+                    {
+                        _companiesWithoutBalanceQuery = new CompaniesWithoutBalanceQuery();
+                    }
+                    return _companiesWithoutBalanceQuery;
+                }
+            }
+        }
 
+        /// <summary>
+        /// CompaniesWithoutCashQuery
+        /// </summary>
+        public static CompaniesWithoutCashQuery CompaniesWithoutCashQuery
+        {
+            get
+            {
+                lock (lockObject)
+                {
+                    if (_companiesWithoutCashQuery == null)
+                    {
+                        _companiesWithoutCashQuery = new CompaniesWithoutCashQuery();
+                    }
+                    return _companiesWithoutCashQuery;
+                }
+            }
+        }
     }
 }

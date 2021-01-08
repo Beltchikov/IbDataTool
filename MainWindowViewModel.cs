@@ -191,7 +191,9 @@ namespace IbDataTool
         /// <param name="p"></param>
         private void ImportFundamentals(object p)
         {
-            var companiesWithoutFundamentals = QueryFactory.CompaniesWithoutDocumentQuery.Run(Date);
+            var companiesWithoutIncome = QueryFactory.CompaniesWithoutIncomeQuery.Run(Date);
+            var companiesWithoutBalance = QueryFactory.CompaniesWithoutBalanceQuery.Run(Date);
+            var companiesWithoutCash = QueryFactory.CompaniesWithoutCashQuery.Run(Date);
             
             IbClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
 
