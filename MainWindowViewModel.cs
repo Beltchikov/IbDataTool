@@ -194,7 +194,11 @@ namespace IbDataTool
             var companiesWithoutIncome = QueryFactory.CompaniesWithoutIncomeQuery.Run(Date);
             var companiesWithoutBalance = QueryFactory.CompaniesWithoutBalanceQuery.Run(Date);
             var companiesWithoutCash = QueryFactory.CompaniesWithoutCashQuery.Run(Date);
-            
+
+            var companiesWithoutDocuments = companiesWithoutIncome.Union(companiesWithoutBalance).Union(companiesWithoutCash);
+            companiesWithoutDocuments = companiesWithoutDocuments.Where(c => !string.IsNullOrWhiteSpace(c)).ToList();
+
+
             IbClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
 
 
