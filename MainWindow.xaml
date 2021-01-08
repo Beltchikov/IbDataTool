@@ -92,9 +92,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="150"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="200"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="200"/>
                         <ColumnDefinition Width="10"/>
@@ -104,49 +102,50 @@
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="10"/>
                     </Grid.RowDefinitions>
-                    <Label Grid.Column="1" 
-                       Grid.Row="1" Content="Symbols:"></Label>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
-                       Grid.Row="2" Grid.RowSpan="3">
-                        <TextBox x:Name="txtSymbols" 
-                            TextWrapping="Wrap"
-                            AcceptsReturn="True"
-                            Text="{Binding Symbols}"></TextBox>
-                    </ScrollViewer>
                     <Label Content="IB Port:"
-               Grid.Column="3"
+               Grid.Column="1"
                Grid.Row="1"></Label>
                     <TextBox x:Name="txtPortIb" 
-                    Grid.Column="4"
+                    Grid.Column="2"
                     Grid.Row="1"
                     Margin="2,2,2,2"
                     Width="100"
                     HorizontalAlignment="Left"
                     Text="{Binding PortIb}"></TextBox>
-                    <Button Content="Import IB Data"
-                Grid.Column="5"
+                    <Button Content="Import Fundamentals"
+                Grid.Column="3"
                 Grid.Row="1"
                 Margin="2,2,2,2"
-                Command="{Binding CommandImportData}"></Button>
+                Command="{Binding CommandImportFundamentals}"></Button>
                     <Label Content="Connectrion String:"
                Grid.Row="2"
-               Grid.Column="3"></Label>
+               Grid.Column="1"></Label>
                     <TextBox x:Name="txtConnectionString" 
                  Grid.Row="2"                
-                 Grid.Column="4" 
+                 Grid.Column="2" 
                  Margin="2,2,2,2"
                  Text="{Binding ConnectionString}"></TextBox>
+                    <Label Content="Date:"
+                   Grid.Row="3"
+                   Grid.Column="1"></Label>
+                    <TextBox x:Name="txtDate" 
+               Text="{Binding Date}"
+                             Width="100"
+                             HorizontalAlignment="Left"
+                Grid.Column="2" 
+                Grid.Row="3" 
+                Margin="2,2,2,2"></TextBox>
                     <Label Content="Log:"
-               Grid.Row="3"
-               Grid.Column="3"></Label>
+                   Grid.Row="4"
+                   Grid.Column="1"></Label>
                     <TextBox x:Name="txtLogIb" 
                Text="{Binding Log}"
-                Grid.Column="3" 
-                Grid.Row="4"
-                Grid.ColumnSpan="3"
+                Grid.Column="2" 
+                Grid.Row="4" Grid.RowSpan="2"
                 Margin="2,2,2,2"></TextBox>
                 </Grid>
             </TabItem>

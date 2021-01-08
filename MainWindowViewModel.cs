@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using IbDataTool.Model;
+using IbDataTool.Queries;
 
 namespace IbDataTool
 {
@@ -24,8 +25,9 @@ namespace IbDataTool
         public static readonly DependencyProperty ExchangesProperty;
         public static readonly DependencyProperty ExchangeSelectedProperty;
         public static readonly DependencyProperty BackgroundLogProperty;
+        public static readonly DependencyProperty DateProperty;
 
-        public RelayCommand CommandImportData { get; set; }
+        public RelayCommand CommandImportFundamentals { get; set; }
         public RelayCommand CommandImportContracts { get; set; }
 
         static MainWindowViewModel()
@@ -38,8 +40,8 @@ namespace IbDataTool
             ExchangesProperty = DependencyProperty.Register("Exchanges", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             ExchangeSelectedProperty = DependencyProperty.Register("ExchangeSelected", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             BackgroundLogProperty = DependencyProperty.Register("BackgroundLog", typeof(Brush), typeof(MainWindowViewModel), new PropertyMetadata(default(Brush)));
-
-        }
+            DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+    }
 
         public MainWindowViewModel()
         {
@@ -47,9 +49,11 @@ namespace IbDataTool
             ConnectionString = Configuration.Instance["ConnectionString"];
             Log.Add("Willkommen! Enjoy the day (-:");
             BackgroundLog = Brushes.White;
+            Date = "2019-12-31";
+
             InitExchangeCombobox();
 
-            CommandImportData = new RelayCommand((p) => ImportFundamentals(p));
+            CommandImportFundamentals = new RelayCommand((p) => ImportFundamentals(p));
             CommandImportContracts = new RelayCommand(async (p) => await ImportContractsAsync(p));
 
             IbClient.Instance.NextValidId += NextValidIdHandler;
@@ -147,6 +151,15 @@ namespace IbDataTool
         }
 
         /// <summary>
+        /// Date
+        /// </summary>
+        public string Date
+        {
+            get { return (string)GetValue(DateProperty); }
+            set { SetValue(DateProperty, value); }
+        }
+
+        /// <summary>
         /// CompaniesList
         /// </summary>
         public List<string> CompaniesList { get; set; }
@@ -178,7 +191,7 @@ namespace IbDataTool
         /// <param name="p"></param>
         private void ImportFundamentals(object p)
         {
-            //var companiesWithoutFundamentals = DataContext.Instance.
+            var companiesWithoutFundamentals = QueryFactory.CompaniesWithoutDocumentQuery.Run(Date);
             
             IbClient.Instance.Connect(Configuration.Instance["Localhost"], PortIb, 1);
 

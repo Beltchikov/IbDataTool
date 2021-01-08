@@ -7,17 +7,17 @@ using IbDataTool.Model;
 namespace IbDataTool.Queries
 {
     /// <summary>
-    /// CompaniesWithoutDocument
+    /// CompaniesWithoutDocumentQuery
     /// </summary>
-    public class CompaniesWithoutDocument : DataContext
+    public class CompaniesWithoutDocumentQuery : DataContext
     {
+        
         /// <summary>
         /// Run
         /// </summary>
-        /// <param name="symbol"></param>
         /// <param name="date"></param>
         /// <returns></returns>
-        public List<string> Run(string symbol, string date)
+        public List<string> Run(string date)
         {
             return (from stock in Stocks
                     join income in IncomeStatements
