@@ -192,6 +192,21 @@ namespace IbDataTool
         public List<string> SymbolProcessed { get; set; }
 
         /// <summary>
+        /// ContractList
+        /// </summary>
+        public List<Contract> ContractList { get; set; }
+
+        /// <summary>
+        /// CurrentContract
+        /// </summary>
+        public Contract CurrentContract { get; private set; }
+
+        /// <summary>
+        /// ContractsProcessed
+        /// </summary>
+        public List<Contract> ContractsProcessed { get; set; }
+
+        /// <summary>
         /// ConnectedToIb
         /// </summary>
         public bool ConnectedToIb { get; set; }
@@ -210,7 +225,7 @@ namespace IbDataTool
                 return;
             }
 
-            LogSymbols.Clear();
+            LogFundamentals.Clear();
             BackgroundLog = Brushes.Gray;
             await Task.Run(() =>
             {
@@ -222,21 +237,29 @@ namespace IbDataTool
                     portIb = PortIb;
                     host = Configuration.Instance["Localhost"];
                     delay = Convert.ToInt32(Configuration.Instance["DelayFundamentals"]);
+                    ContractList = contractsToProcess;
+                    ContractsProcessed = new List<Contract>();
                 });
 
                 IbClient.Instance.Connect(host, portIb, 1);
 
-                // TODO ATTENTION Take(2)
-                //foreach (var contract in contractsToProcess)
-                foreach (var contract in contractsToProcess.Skip(500).Take(2))
+                foreach (var contract in contractsToProcess)
                 {
-                    CurrentCompany = contract.Company;
+                    CurrentContract = contract;
                     IbClient.Instance.RequestFundamentals(contract);
                     Thread.Sleep(delay);
                 }
             });
 
-            IbClient.Instance.Disonnect();
+            if (ConnectedToIb)
+            {
+                LogFundamentals.Add($"OK! Import completed.");
+                IbClient.Instance.Disonnect();
+            }
+            else
+            {
+                LogFundamentals.Add($"ERROR! Error while connection to IB server.");
+            }
         }
 
         /// <summary>
@@ -470,17 +493,109 @@ namespace IbDataTool
         /// <param name="obj"></param>
         private void FundamentalDataHandler(IBSampleApp.messages.FundamentalsMessage obj)
         {
-            LogFundamentals.Add($"Processing {CurrentCompany} ...");
+            LogFundamentals.Add($"Processing {CurrentContract.Company} ... {ContractList.Count()} companies more.");
+            ContractList.Remove(CurrentContract);
             FundamentalsXmlDocument xmlDocument = XmlFactory.Instance.CreateXml(obj, Date);
 
-            var revenue = xmlDocument.Revenue();
-            var operatingIncome = xmlDocument.OperatingIncome();
-            var eps = xmlDocument.Eps();
-            var netIncome = xmlDocument.NetIncome();
-            var equity = xmlDocument.Equity();
-            var netIncomeFromCashStatement = xmlDocument.NetIncomeFromCashStatement();
-            var operatingCashFlow = xmlDocument.OperatingCashFlow();
-            var investmentsInPropertyPlantAndEquipment = xmlDocument.InvestmentsInPropertyPlantAndEquipment();
+            SaveIncomeStatement(CurrentContract, xmlDocument);
+            SaveBalanceSheet(CurrentContract, xmlDocument);
+            SaveCashFlowStatement(CurrentContract, xmlDocument);
+
+        }
+        
+        /// <summary>
+        /// SaveIncomeStatement
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <param name="xmlDocument"></param>
+        private void SaveIncomeStatement(Contract contract, FundamentalsXmlDocument xmlDocument)
+        {
+            if(DataContext.Instance.IncomeStatements.Any(i => i.Symbol == contract.Symbol && i.Date == Date))
+            {
+                LogFundamentals.Add($"Income statement for {contract.Company} already exists in database.");
+                return;
+            }
+            
+            var incomeStatement = new IncomeStatement()
+            {
+                Symbol = contract.Symbol,
+                Date = Date,
+                Revenue = xmlDocument.Revenue(),
+                OperatingIncome = xmlDocument.OperatingIncome(),
+                Epsdiluted = xmlDocument.Eps(),
+                NetIncome = xmlDocument.NetIncome()
+            };
+            try
+            {
+                DataContext.Instance.IncomeStatements.Add(incomeStatement);
+                DataContext.Instance.SaveChanges();
+            }
+            catch (Exception exception)
+            {
+                LogFundamentals.Add(exception.ToString());
+            }
+        }
+
+        /// <summary>
+        /// SaveBalanceSheet
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <param name="xmlDocument"></param>
+        private void SaveBalanceSheet(Contract contract, FundamentalsXmlDocument xmlDocument)
+        {
+            if (DataContext.Instance.BalanceSheets.Any(i => i.Symbol == contract.Symbol && i.Date == Date))
+            {
+                LogFundamentals.Add($"Balance sheet for {contract.Company} already exists in database.");
+                return;
+            }
+
+            var balanceSheet = new BalanceSheet()
+            {
+                Symbol = CurrentContract.Symbol,
+                Date = Date,
+                TotalStockholdersEquity = xmlDocument.Equity()
+            };
+            try
+            {
+                DataContext.Instance.BalanceSheets.Add(balanceSheet);
+                DataContext.Instance.SaveChanges();
+            }
+            catch (Exception exception)
+            {
+                LogFundamentals.Add(exception.ToString());
+            }
+        }
+
+        /// <summary>
+        /// SaveCashFlowStatement
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <param name="xmlDocument"></param>
+        private void SaveCashFlowStatement(Contract contract, FundamentalsXmlDocument xmlDocument)
+        {
+            if (DataContext.Instance.CashFlowStatements.Any(i => i.Symbol == contract.Symbol && i.Date == Date))
+            {
+                LogFundamentals.Add($"Cash flow statement for {contract.Company} already exists in database.");
+                return;
+            }
+
+            var cashFlowStatement = new CashFlowStatement()
+            {
+                Symbol = CurrentContract.Symbol,
+                Date = Date,
+                NetIncome = xmlDocument.NetIncomeFromCashStatement(),
+                OperatingCashFlow = xmlDocument.OperatingCashFlow(),
+                InvestmentsInPropertyPlantAndEquipment = xmlDocument.InvestmentsInPropertyPlantAndEquipment()
+            };
+            try
+            {
+                DataContext.Instance.CashFlowStatements.Add(cashFlowStatement);
+                DataContext.Instance.SaveChanges();
+            }
+            catch (Exception exception)
+            {
+                LogFundamentals.Add(exception.ToString());
+            }
         }
 
     }
