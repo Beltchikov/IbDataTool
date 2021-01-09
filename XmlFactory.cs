@@ -37,7 +37,7 @@ namespace IbDataTool
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public XmlDocument CreateXml(FundamentalsMessage obj)
+        public FundamentalsXmlDocument CreateXml(FundamentalsMessage obj)
         {
             return new FundamentalsXmlDocument(obj.Data);
         }

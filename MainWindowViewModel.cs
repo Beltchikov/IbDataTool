@@ -471,7 +471,9 @@ namespace IbDataTool
         private void FundamentalDataHandler(IBSampleApp.messages.FundamentalsMessage obj)
         {
             LogFundamentals.Add($"Processing {CurrentCompany} ...");
-            var xmlDocument = XmlFactory.Instance.CreateXml(obj);
+            FundamentalsXmlDocument xmlDocument = XmlFactory.Instance.CreateXml(obj);
+
+            var netIncome = xmlDocument.NetIncome();
         }
 
     }
