@@ -477,6 +477,7 @@ namespace IbDataTool
             var operatingIncome = xmlDocument.OperatingIncome();
             var eps = xmlDocument.Eps();
             var netIncome = xmlDocument.NetIncome();
+            var equity = xmlDocument.Equity();
         }
 
     }

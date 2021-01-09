@@ -143,5 +143,34 @@ namespace IbDataTool.Model
                 return 0d;
             }
         }
+
+        /// <summary>
+        /// Equity
+        /// </summary>
+        /// <returns></returns>
+        public double Equity()
+        {
+            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+                            FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
+                            Statement[@Type='BAL']//lineItem[@coaCode='QTLE']";
+            xPath = xPath.Replace("@@date", _date);
+            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+
+            var lineItems = DocumentElement.SelectNodes(xPath);
+            if (lineItems.Count != 1)
+            {
+                return 0d;
+            }
+
+            try
+            {
+                return Convert.ToDouble(lineItems[0].InnerText, _culture);
+            }
+            catch (Exception)
+            {
+
+                return 0d;
+            }
+        }
     }
 }
