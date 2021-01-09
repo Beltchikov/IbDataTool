@@ -78,8 +78,8 @@
                     <Label Content="Log:"
                Grid.Row="4"
                Grid.Column="3"></Label>
-                    <ListBox ItemsSource="{Binding Log}"
-                    x:Name="listBoxLog"  
+                    <ListBox ItemsSource="{Binding LogSymbols}"
+                    x:Name="listBoxLogSymbols"  
                     Background="{Binding BackgroundLog}"
                              Loaded="listBoxLog_Loaded"
                     Grid.Column="3" 
@@ -142,11 +142,14 @@
                     <Label Content="Log:"
                    Grid.Row="4"
                    Grid.Column="1"></Label>
-                    <TextBox x:Name="txtLogIb" 
-               Text="{Binding Log}"
-                Grid.Column="2" 
-                Grid.Row="4" Grid.RowSpan="2"
-                Margin="2,2,2,2"></TextBox>
+                    <ListBox ItemsSource="{Binding LogFundamentals}"
+                    x:Name="listBoxLogFundamentals"  
+                    Background="{Binding BackgroundLog}"
+                             Loaded="listBoxLog_Loaded"
+                    Grid.Column="2" 
+                    Grid.Row="4"
+                    Grid.RowSpan="2">
+                    </ListBox>
                 </Grid>
             </TabItem>
         </TabControl>

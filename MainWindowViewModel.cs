@@ -19,7 +19,8 @@ namespace IbDataTool
     {
         public static readonly DependencyProperty PortIbProperty;
         public static readonly DependencyProperty ConnectionStringProperty;
-        public static readonly DependencyProperty LogProperty;
+        public static readonly DependencyProperty LogSymbolsProperty;
+        public static readonly DependencyProperty LogFundamentalsProperty;
         public static readonly DependencyProperty CompaniesProperty;
         public static readonly DependencyProperty SymbolsProperty;
         public static readonly DependencyProperty ExchangesProperty;
@@ -34,7 +35,8 @@ namespace IbDataTool
         {
             PortIbProperty = DependencyProperty.Register("PortIb", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
             ConnectionStringProperty = DependencyProperty.Register("ConnectionString", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-            LogProperty = DependencyProperty.Register("Log", typeof(ObservableCollection<string>), typeof(MainWindowViewModel), new PropertyMetadata(new ObservableCollection<string>()));
+            LogSymbolsProperty = DependencyProperty.Register("LogSymbols", typeof(ObservableCollection<string>), typeof(MainWindowViewModel), new PropertyMetadata(new ObservableCollection<string>()));
+            LogFundamentalsProperty = DependencyProperty.Register("LogFundamentals", typeof(ObservableCollection<string>), typeof(MainWindowViewModel), new PropertyMetadata(new ObservableCollection<string>()));
             CompaniesProperty = DependencyProperty.Register("Companies", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             SymbolsProperty = DependencyProperty.Register("Symbols", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ExchangesProperty = DependencyProperty.Register("Exchanges", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
@@ -47,7 +49,7 @@ namespace IbDataTool
         {
             PortIb = Convert.ToInt32(Configuration.Instance["PortIb"]);
             ConnectionString = Configuration.Instance["ConnectionString"];
-            Log.Add("Willkommen! Enjoy the day (-:");
+            LogSymbols.Add("Willkommen! Enjoy the day (-:");
             BackgroundLog = Brushes.White;
             Date = "2019-12-31";
 
@@ -92,12 +94,21 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// Log
+        /// LogSymbols
         /// </summary>
-        public ObservableCollection<string> Log
+        public ObservableCollection<string> LogSymbols
         {
-            get { return (ObservableCollection<string>)GetValue(LogProperty); }
-            set { SetValue(LogProperty, value); }
+            get { return (ObservableCollection<string>)GetValue(LogSymbolsProperty); }
+            set { SetValue(LogSymbolsProperty, value); }
+        }
+
+        /// <summary>
+        /// LogFundamentals
+        /// </summary>
+        public ObservableCollection<string> LogFundamentals
+        {
+            get { return (ObservableCollection<string>)GetValue(LogFundamentalsProperty); }
+            set { SetValue(LogFundamentalsProperty, value); }
         }
 
         /// <summary>
@@ -192,13 +203,13 @@ namespace IbDataTool
         private async Task ImportFundamentalsAsync(object p)
         {
             var companiesToProcess = CompaniesForIbFundamentalsQueries();
-            if (companiesToProcess.Any())
+            if (!companiesToProcess.Any())
             {
-                // TODO Log
+                LogFundamentals.Add("No companies to process.");
                 return;
             }
 
-            // Log.Clear();   // TODO
+            LogSymbols.Clear(); 
             BackgroundLog = Brushes.Gray;
             await Task.Run(() =>
             {
@@ -251,11 +262,11 @@ namespace IbDataTool
         {
             if (String.IsNullOrWhiteSpace(ExchangeSelected))
             {
-                Log.Add($"ERROR! Exchange must be selected.");
+                LogSymbols.Add($"ERROR! Exchange must be selected.");
                 return;
             }
 
-            Log.Clear();
+            LogSymbols.Clear();
             BackgroundLog = Brushes.Gray;
             await Task.Run(() =>
             {
@@ -291,20 +302,20 @@ namespace IbDataTool
                 }
                 catch (Exception exception)
                 {
-                    Dispatcher.Invoke(() => { Log.Add(exception.ToString()); });
+                    Dispatcher.Invoke(() => { LogSymbols.Add(exception.ToString()); });
                 }
             });
 
             if (ConnectedToIb)
             {
-                Log.Add($"OK! Import completed.");
+                LogSymbols.Add($"OK! Import completed.");
                 DataContext.Instance.SaveChanges();
-                Log.Add("OK! All contracts saved in database.");
+                LogSymbols.Add("OK! All contracts saved in database.");
                 IbClient.Instance.Disonnect();
             }
             else
             {
-                Log.Add($"ERROR! Error while connection to IB server.");
+                LogSymbols.Add($"ERROR! Error while connection to IB server.");
             }
 
         }
@@ -352,7 +363,7 @@ namespace IbDataTool
                 message = "ERROR! error connecting to IB server.";
             }
 
-            Log.Add(message);
+            LogSymbols.Add(message);
         }
 
         /// <summary>
@@ -360,7 +371,7 @@ namespace IbDataTool
         /// </summary>
         private void ConnectionClosedHandler()
         {
-            Log.Add($"Connection to IB server closed.");
+            LogSymbols.Add($"Connection to IB server closed.");
         }
 
         /// <summary>
@@ -369,10 +380,10 @@ namespace IbDataTool
         /// <param name="obj"></param>
         private void SymbolSamplesHandler(IBSampleApp.messages.SymbolSamplesMessage obj)
         {
-            Log.Add($"{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}. {CompaniesList.Count()} companies more.");
+            LogSymbols.Add($"{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}. {CompaniesList.Count()} companies more.");
             CompaniesList.Remove(CurrentCompany);
             var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeSelected);
-            Log.Add($"{contracts.Count()} symbols filtered out for company {CurrentCompany}");
+            LogSymbols.Add($"{contracts.Count()} symbols filtered out for company {CurrentCompany}");
 
             try
             {
@@ -388,7 +399,7 @@ namespace IbDataTool
             }
             catch (Exception exception)
             {
-                Log.Add(exception.ToString());
+                LogSymbols.Add(exception.ToString());
             }
         }
 
@@ -405,7 +416,7 @@ namespace IbDataTool
                 {
                     if (DataContext.Instance.Contracts.Any(c => c.Symbol == contract.Symbol))
                     {
-                        Log.Add($"Symbol {contract.Symbol} exists already in database table Contracts.");
+                        LogSymbols.Add($"Symbol {contract.Symbol} exists already in database table Contracts.");
                         continue;
                     }
                     DataContext.Instance.Contracts.Add(contract);
@@ -425,7 +436,7 @@ namespace IbDataTool
             {
                 if (DataContext.Instance.NotResolved.Any(n => n.Company == CurrentCompany))
                 {
-                    Log.Add($"Company {CurrentCompany} exists already in database table NotResolved.");
+                    LogSymbols.Add($"Company {CurrentCompany} exists already in database table NotResolved.");
                     return;
                 }
 
@@ -444,7 +455,7 @@ namespace IbDataTool
                 || CompaniesList.Count() == 0)
             {
                 DataContext.Instance.SaveChanges();
-                Log.Add("OK! Current batch saved in database.");
+                LogSymbols.Add("OK! Current batch saved in database.");
             }
         }
 
