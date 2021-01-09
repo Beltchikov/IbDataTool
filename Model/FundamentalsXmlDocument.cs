@@ -56,5 +56,92 @@ namespace IbDataTool.Model
                 return 0d;
             }
         }
+
+        /// <summary>
+        /// Revenue
+        /// </summary>
+        /// <returns></returns>
+        public double Revenue()
+        {
+            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+                            FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
+                            Statement[@Type='INC']//lineItem[@coaCode='SREV']";
+            xPath = xPath.Replace("@@date", _date);
+            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+
+            var lineItems = DocumentElement.SelectNodes(xPath);
+            if (lineItems.Count != 1)
+            {
+                return 0d;
+            }
+
+            try
+            {
+                return Convert.ToDouble(lineItems[0].InnerText, _culture);
+            }
+            catch (Exception)
+            {
+
+                return 0d;
+            }
+        }
+
+        /// <summary>
+        /// OperatingIncome
+        /// </summary>
+        /// <returns></returns>
+        public double OperatingIncome()
+        {
+            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+                            FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
+                            Statement[@Type='INC']//lineItem[@coaCode='SOPI']";
+            xPath = xPath.Replace("@@date", _date);
+            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+
+            var lineItems = DocumentElement.SelectNodes(xPath);
+            if (lineItems.Count != 1)
+            {
+                return 0d;
+            }
+
+            try
+            {
+                return Convert.ToDouble(lineItems[0].InnerText, _culture);
+            }
+            catch (Exception)
+            {
+
+                return 0d;
+            }
+        }
+
+        /// <summary>
+        /// Eps
+        /// </summary>
+        /// <returns></returns>
+        public double Eps()
+        {
+            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+                            FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
+                            Statement[@Type='INC']//lineItem[@coaCode='VDES']";
+            xPath = xPath.Replace("@@date", _date);
+            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+
+            var lineItems = DocumentElement.SelectNodes(xPath);
+            if (lineItems.Count != 1)
+            {
+                return 0d;
+            }
+
+            try
+            {
+                return Convert.ToDouble(lineItems[0].InnerText, _culture);
+            }
+            catch (Exception)
+            {
+
+                return 0d;
+            }
+        }
     }
 }

@@ -228,7 +228,7 @@ namespace IbDataTool
 
                 // TODO ATTENTION Take(2)
                 //foreach (var contract in contractsToProcess)
-                foreach (var contract in contractsToProcess.Take(2))
+                foreach (var contract in contractsToProcess.Skip(500).Take(2))
                 {
                     CurrentCompany = contract.Company;
                     IbClient.Instance.RequestFundamentals(contract);
@@ -473,6 +473,9 @@ namespace IbDataTool
             LogFundamentals.Add($"Processing {CurrentCompany} ...");
             FundamentalsXmlDocument xmlDocument = XmlFactory.Instance.CreateXml(obj, Date);
 
+            var revenue = xmlDocument.Revenue();
+            var operatingIncome = xmlDocument.OperatingIncome();
+            var eps = xmlDocument.Eps();
             var netIncome = xmlDocument.NetIncome();
         }
 
