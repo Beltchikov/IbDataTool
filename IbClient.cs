@@ -102,16 +102,16 @@ namespace IbDataTool
             }
         }
 
-        public void RequestFundamentals(String symbol, string currency)
+        public void RequestFundamentals(IbDataTool.Model.Contract contract)
         {
-            Contract contract = new Contract
+            Contract ibContract = new Contract
             {
-                SecType = SECURITY_TYPE_STOCK,
-                Symbol = symbol,
-                Currency = currency,
-                Exchange = EXCHANGE_SMART
+                SecType = contract.SecType,
+                Symbol = contract.Symbol,
+                Currency = contract.Currency,
+                Exchange = contract.Exchange
             };
-            ClientSocket.reqFundamentalData(FUNDAMENTALS_ID, contract, REPORT_TYPE_FIN_STATEMENTS, new List<TagValue>());
+            ClientSocket.reqFundamentalData(FUNDAMENTALS_ID, ibContract, REPORT_TYPE_FIN_STATEMENTS, new List<TagValue>());
 
         }
 

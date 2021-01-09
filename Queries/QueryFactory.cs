@@ -15,7 +15,8 @@ namespace IbDataTool.Queries
         private static CompaniesWithoutBalanceQuery _companiesWithoutBalanceQuery;
         private static CompaniesWithoutCashQuery _companiesWithoutCashQuery;
         private static CompaniesWithExactOneIbSymbolQuery _companiesWithExactOneIbSymbolQuery;
-        
+        private static ContractsByCompanyNameQuery _contractsByCompanyName;
+
         /// <summary>
         /// CompaniesWithoutIncomeQuery
         /// </summary>
@@ -84,6 +85,24 @@ namespace IbDataTool.Queries
                         _companiesWithExactOneIbSymbolQuery = new CompaniesWithExactOneIbSymbolQuery();
                     }
                     return _companiesWithExactOneIbSymbolQuery;
+                }
+            }
+        }
+
+        /// <summary>
+        /// ContractsByCompanyName
+        /// </summary>
+        public static ContractsByCompanyNameQuery ContractsByCompanyName
+        {
+            get
+            {
+                lock (lockObject)
+                {
+                    if (_contractsByCompanyName == null)
+                    {
+                        _contractsByCompanyName = new ContractsByCompanyNameQuery();
+                    }
+                    return _contractsByCompanyName;
                 }
             }
         }

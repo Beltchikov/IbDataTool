@@ -61,6 +61,7 @@ namespace IbDataTool
             IbClient.Instance.NextValidId += NextValidIdHandler;
             IbClient.Instance.ConnectionClosed += ConnectionClosedHandler;
             IbClient.Instance.SymbolSamples += SymbolSamplesHandler;
+            IbClient.Instance.FundamentalData += FundamentalDataHandler;
         }
 
         /// <summary>
@@ -202,14 +203,14 @@ namespace IbDataTool
         /// <param name="p"></param>
         private async Task ImportFundamentalsAsync(object p)
         {
-            var companiesToProcess = CompaniesForIbFundamentalsQueries();
-            if (!companiesToProcess.Any())
+            var contractsToProcess = ContractsForIbFundamentalsQueries();
+            if (!contractsToProcess.Any())
             {
                 LogFundamentals.Add("No companies to process.");
                 return;
             }
 
-            LogSymbols.Clear(); 
+            LogSymbols.Clear();
             BackgroundLog = Brushes.Gray;
             await Task.Run(() =>
             {
@@ -225,10 +226,12 @@ namespace IbDataTool
 
                 IbClient.Instance.Connect(host, portIb, 1);
 
-                foreach (var company in companiesToProcess)
+                // TODO ATTENTION Take(2)
+                //foreach (var contract in contractsToProcess)
+                foreach (var contract in contractsToProcess.Take(2))
                 {
-                    CurrentCompany = company;
-                    IbClient.Instance.LookForSymbols(company);
+                    CurrentCompany = contract.Company;
+                    IbClient.Instance.RequestFundamentals(contract);
                     Thread.Sleep(delay);
                 }
             });
@@ -237,10 +240,10 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// CompaniesForIbFundamentalsQueries
+        /// ContractsForIbFundamentalsQueries
         /// </summary>
         /// <returns></returns>
-        List<string> CompaniesForIbFundamentalsQueries()
+        List<Contract> ContractsForIbFundamentalsQueries()
         {
             var companiesWithoutIncome = QueryFactory.CompaniesWithoutIncomeQuery.Run(Date);
             var companiesWithoutBalance = QueryFactory.CompaniesWithoutBalanceQuery.Run(Date);
@@ -251,7 +254,9 @@ namespace IbDataTool
 
             var companiesWithExactOneIbSymbol = QueryFactory.CompaniesWithExactOneIbSymbolQuery.Run();
             var companiesToProcess = companiesWithoutDocuments.Intersect(companiesWithExactOneIbSymbol).ToList();
-            return companiesToProcess;
+            var contractsToProcess = QueryFactory.ContractsByCompanyName.Run(companiesToProcess).ToList();
+
+            return contractsToProcess;
         }
 
         /// <summary>
@@ -459,8 +464,13 @@ namespace IbDataTool
             }
         }
 
-        private void Instance_FundamentalData(IBSampleApp.messages.FundamentalsMessage obj)
+        /// <summary>
+        /// FundamentalDataHandler
+        /// </summary>
+        /// <param name="obj"></param>
+        private void FundamentalDataHandler(IBSampleApp.messages.FundamentalsMessage obj)
         {
+            LogFundamentals.Add($"Processing {CurrentCompany} ...");
             var xmlDocument = XmlFactory.Instance.CreateXml(obj);
         }
 
