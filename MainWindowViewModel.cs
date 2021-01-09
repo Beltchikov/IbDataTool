@@ -218,36 +218,43 @@ namespace IbDataTool
         /// <param name="p"></param>
         private async Task ImportFundamentalsAsync(object p)
         {
-            var contractsToProcess = ContractsForIbFundamentalsQueries();
-            if (!contractsToProcess.Any())
-            {
-                LogFundamentals.Add("No companies to process.");
-                return;
-            }
-
             LogFundamentals.Clear();
             BackgroundLog = Brushes.Gray;
+
             await Task.Run(() =>
             {
-                int portIb = 0;
-                string host = string.Empty;
-                int delay = 0;
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    portIb = PortIb;
-                    host = Configuration.Instance["Localhost"];
-                    delay = Convert.ToInt32(Configuration.Instance["DelayFundamentals"]);
-                    ContractList = contractsToProcess;
-                    ContractsProcessed = new List<Contract>();
-                });
+                    int portIb = 0;
+                    string host = string.Empty;
+                    int delay = 0;
+                    Dispatcher.Invoke(() =>
+                    {
+                        portIb = PortIb;
+                        host = Configuration.Instance["Localhost"];
+                        delay = Convert.ToInt32(Configuration.Instance["DelayFundamentals"]);
+                    });
 
-                IbClient.Instance.Connect(host, portIb, 1);
+                    IbClient.Instance.Connect(host, portIb, 1);
 
-                foreach (var contract in contractsToProcess)
+                    List<Contract> contractsToProcess = new List<Contract>();
+                    Dispatcher.Invoke(() =>
+                    {
+                        contractsToProcess = ContractsForIbFundamentalsQueries();
+                        ContractList = new List<Contract>(contractsToProcess);
+                        ContractsProcessed = new List<Contract>();
+                    });
+
+                    foreach (var contract in contractsToProcess)
+                    {
+                        CurrentContract = contract;
+                        IbClient.Instance.RequestFundamentals(contract);
+                        Thread.Sleep(delay);
+                    }
+                }
+                catch (Exception exception)
                 {
-                    CurrentContract = contract;
-                    IbClient.Instance.RequestFundamentals(contract);
-                    Thread.Sleep(delay);
+                    Dispatcher.Invoke(() => { LogFundamentals.Add(exception.ToString()); });
                 }
             });
 
@@ -260,26 +267,7 @@ namespace IbDataTool
             {
                 LogFundamentals.Add($"ERROR! Error while connection to IB server.");
             }
-        }
 
-        /// <summary>
-        /// ContractsForIbFundamentalsQueries
-        /// </summary>
-        /// <returns></returns>
-        List<Contract> ContractsForIbFundamentalsQueries()
-        {
-            var companiesWithoutIncome = QueryFactory.CompaniesWithoutIncomeQuery.Run(Date);
-            var companiesWithoutBalance = QueryFactory.CompaniesWithoutBalanceQuery.Run(Date);
-            var companiesWithoutCash = QueryFactory.CompaniesWithoutCashQuery.Run(Date);
-
-            var companiesWithoutDocuments = companiesWithoutIncome.Union(companiesWithoutBalance).Union(companiesWithoutCash);
-            companiesWithoutDocuments = companiesWithoutDocuments.Where(c => !string.IsNullOrWhiteSpace(c)).ToList();
-
-            var companiesWithExactOneIbSymbol = QueryFactory.CompaniesWithExactOneIbSymbolQuery.Run();
-            var companiesToProcess = companiesWithoutDocuments.Intersect(companiesWithExactOneIbSymbol).ToList();
-            var contractsToProcess = QueryFactory.ContractsByCompanyName.Run(companiesToProcess).ToList();
-
-            return contractsToProcess;
         }
 
         /// <summary>
@@ -346,6 +334,26 @@ namespace IbDataTool
                 LogSymbols.Add($"ERROR! Error while connection to IB server.");
             }
 
+        }
+
+        /// <summary>
+        /// ContractsForIbFundamentalsQueries
+        /// </summary>
+        /// <returns></returns>
+        private List<Contract> ContractsForIbFundamentalsQueries()
+        {
+            var companiesWithoutIncome = QueryFactory.CompaniesWithoutIncomeQuery.Run(Date);
+            var companiesWithoutBalance = QueryFactory.CompaniesWithoutBalanceQuery.Run(Date);
+            var companiesWithoutCash = QueryFactory.CompaniesWithoutCashQuery.Run(Date);
+
+            var companiesWithoutDocuments = companiesWithoutIncome.Union(companiesWithoutBalance).Union(companiesWithoutCash);
+            companiesWithoutDocuments = companiesWithoutDocuments.Where(c => !string.IsNullOrWhiteSpace(c)).ToList();
+
+            var companiesWithExactOneIbSymbol = QueryFactory.CompaniesWithExactOneIbSymbolQuery.Run();
+            var companiesToProcess = companiesWithoutDocuments.Intersect(companiesWithExactOneIbSymbol).ToList();
+            var contractsToProcess = QueryFactory.ContractsByCompanyName.Run(companiesToProcess).ToList();
+
+            return contractsToProcess;
         }
 
         /// <summary>
@@ -502,7 +510,7 @@ namespace IbDataTool
             SaveCashFlowStatement(CurrentContract, xmlDocument);
 
         }
-        
+
         /// <summary>
         /// SaveIncomeStatement
         /// </summary>
@@ -510,12 +518,12 @@ namespace IbDataTool
         /// <param name="xmlDocument"></param>
         private void SaveIncomeStatement(Contract contract, FundamentalsXmlDocument xmlDocument)
         {
-            if(DataContext.Instance.IncomeStatements.Any(i => i.Symbol == contract.Symbol && i.Date == Date))
+            if (DataContext.Instance.IncomeStatements.Any(i => i.Symbol == contract.Symbol && i.Date == Date))
             {
                 LogFundamentals.Add($"Income statement for {contract.Company} already exists in database.");
                 return;
             }
-            
+
             var incomeStatement = new IncomeStatement()
             {
                 Symbol = contract.Symbol,
