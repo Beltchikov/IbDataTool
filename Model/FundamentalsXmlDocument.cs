@@ -172,5 +172,92 @@ namespace IbDataTool.Model
                 return 0d;
             }
         }
+
+        /// <summary>
+        /// NetIncomeFromCashStatement
+        /// </summary>
+        /// <returns></returns>
+        public double NetIncomeFromCashStatement()
+        {
+            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+                            FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
+                            Statement[@Type='CAS']//lineItem[@coaCode='ONET']";
+            xPath = xPath.Replace("@@date", _date);
+            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+
+            var lineItems = DocumentElement.SelectNodes(xPath);
+            if (lineItems.Count != 1)
+            {
+                return 0d;
+            }
+
+            try
+            {
+                return Convert.ToDouble(lineItems[0].InnerText, _culture);
+            }
+            catch (Exception)
+            {
+
+                return 0d;
+            }
+        }
+
+        /// <summary>
+        /// OperatingCashFlow
+        /// </summary>
+        /// <returns></returns>
+        public double OperatingCashFlow()
+        {
+            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+                            FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
+                            Statement[@Type='CAS']//lineItem[@coaCode='OTLO']";
+            xPath = xPath.Replace("@@date", _date);
+            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+
+            var lineItems = DocumentElement.SelectNodes(xPath);
+            if (lineItems.Count != 1)
+            {
+                return 0d;
+            }
+
+            try
+            {
+                return Convert.ToDouble(lineItems[0].InnerText, _culture);
+            }
+            catch (Exception)
+            {
+
+                return 0d;
+            }
+        }
+
+        /// <summary>
+        /// InvestmentsInPropertyPlantAndEquipment
+        /// </summary>
+        /// <returns></returns>
+        public double InvestmentsInPropertyPlantAndEquipment()
+        {
+            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+                            FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
+                            Statement[@Type='CAS']//lineItem[@coaCode='SCEX']";
+            xPath = xPath.Replace("@@date", _date);
+            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+
+            var lineItems = DocumentElement.SelectNodes(xPath);
+            if (lineItems.Count != 1)
+            {
+                return 0d;
+            }
+
+            try
+            {
+                return Convert.ToDouble(lineItems[0].InnerText, _culture);
+            }
+            catch (Exception)
+            {
+
+                return 0d;
+            }
+        }
     }
 }

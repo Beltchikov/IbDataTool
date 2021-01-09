@@ -478,6 +478,9 @@ namespace IbDataTool
             var eps = xmlDocument.Eps();
             var netIncome = xmlDocument.NetIncome();
             var equity = xmlDocument.Equity();
+            var netIncomeFromCashStatement = xmlDocument.NetIncomeFromCashStatement();
+            var operatingCashFlow = xmlDocument.OperatingCashFlow();
+            var investmentsInPropertyPlantAndEquipment = xmlDocument.InvestmentsInPropertyPlantAndEquipment();
         }
 
     }
