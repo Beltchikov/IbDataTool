@@ -263,21 +263,21 @@ namespace IbDataTool
                 {
                     int portIb = 0;
                     string host = string.Empty;
+                    int delay = 0;
                     Dispatcher.Invoke(() =>
                     {
                         portIb = PortIb;
                         host = Configuration.Instance["Localhost"];
+                        delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
                     });
 
                     IbClient.Instance.Connect(host, portIb, 1);
 
-                    int delay = 0;
                     string[] companiesArray = null;
                     Dispatcher.Invoke(() =>
                     {
                         companiesArray = Companies.Split("\r\n").Select(e => e.Trim()).Distinct().ToArray();
                         CompaniesList = companiesArray.ToList();
-                        delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
                         SymbolProcessed = new List<string>();
                         CompaniesProcessed = new List<string>();
                     });
