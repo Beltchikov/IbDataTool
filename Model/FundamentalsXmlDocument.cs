@@ -1,36 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Xml;
 
 namespace IbDataTool.Model
 {
+    /// <summary>
+    /// FundamentalsXmlDocument
+    /// </summary>
     public class FundamentalsXmlDocument : XmlDocument
     {
-        FundamentalsXmlDocument(){}
-        
-        public FundamentalsXmlDocument(string xmlAsString)
+        private string _date;
+        private CultureInfo _culture = new CultureInfo("en-US");
+
+
+        FundamentalsXmlDocument() { }
+
+        /// <summary>
+        /// FundamentalsXmlDocument
+        /// </summary>
+        /// <param name="xmlAsString"></param>
+        /// <param name="date"></param>
+        public FundamentalsXmlDocument(string xmlAsString, string date)
         {
             base.LoadXml(xmlAsString);
+            _date = date;
         }
 
+        /// <summary>
+        /// NetIncome
+        /// </summary>
+        /// <returns></returns>
         public double NetIncome()
         {
-            // /ReportFinancialStatements[@Major="1"]/FinancialStatements/AnnualPeriods/FiscalPeriod[1]/Statement[1]//lineItem[19]/text()
-            
-            //string xPath = "/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods";
-            //string xPath = "/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/FiscalPeriod[@Type='Annual']";
-            string xPath = "/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/FiscalPeriod[@Type='Annual' and @EndDate='2019-12-31' and @FiscalYear='2019']";
-            var annualPeriods = DocumentElement.SelectNodes(xPath);
-            
+            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+                            FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
+                            Statement[@Type='INC']//lineItem[@coaCode='NINC']";
+            xPath = xPath.Replace("@@date", _date);
+            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
 
-            //DocumentElement.SelectNodes();
-            //DocumentElement.SelectSingleNode()
+            var lineItems = DocumentElement.SelectNodes(xPath);
+            if (lineItems.Count != 1)
+            {
+                return 0d;
+            }
 
-            // TODO
-            return 0;
+            try
+            {
+                return Convert.ToDouble(lineItems[0].InnerText, _culture);
+            }
+            catch (Exception)
+            {
+
+                return 0d;
+            }
         }
-
-
     }
 }
