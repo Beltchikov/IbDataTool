@@ -26,6 +26,7 @@
             <RowDefinition Height="60"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
         <Label Content="IB Data Tool" 
                FontSize="32" FontWeight="Bold"
@@ -54,22 +55,24 @@
                 Grid.Row="1" 
                 Margin="2,2,2,2"></TextBox>
 
-        <TabControl Grid.Row="2" Grid.ColumnSpan="7">
+        <TabControl Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5">
             <TabItem Header="Inventory">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="20"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="10"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="20"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="10"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="{Binding InventoryText}"
                                Grid.Row="1"
-                               Grid.Column="1">
+                               Grid.Column="1"
+                               FontSize="20"
+                               FontWeight="Bold">
                     </TextBlock>
                 </Grid>
             </TabItem>
