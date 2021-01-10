@@ -542,7 +542,7 @@ namespace IbDataTool
         /// <param name="xmlDocument"></param>
         private void SaveIncomeStatement(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument)
         {
-            if (DataContext.Instance.IncomeStatements.Any(i => i.Symbol == contract.Symbol && i.Date == Date))
+            if (DataContext.Instance.IncomeStatements.Any(i => i.Symbol == fmpSymbol && i.Date == Date))
             {
                 LogCurrent.Add($"Income statement for {contract.Company} already exists in database.");
                 return;
@@ -577,7 +577,7 @@ namespace IbDataTool
         /// <param name="xmlDocument"></param>
         private void SaveBalanceSheet(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument)
         {
-            if (DataContext.Instance.BalanceSheets.Any(i => i.Symbol == contract.Symbol && i.Date == Date))
+            if (DataContext.Instance.BalanceSheets.Any(i => i.Symbol == fmpSymbol && i.Date == Date))
             {
                 LogCurrent.Add($"Balance sheet for {contract.Company} already exists in database.");
                 return;
@@ -608,7 +608,7 @@ namespace IbDataTool
         /// <param name="xmlDocument"></param>
         private void SaveCashFlowStatement(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument)
         {
-            if (DataContext.Instance.CashFlowStatements.Any(i => i.Symbol == contract.Symbol && i.Date == Date))
+            if (DataContext.Instance.CashFlowStatements.Any(i => i.Symbol == fmpSymbol && i.Date == Date))
             {
                 LogCurrent.Add($"Cash flow statement for {contract.Company} already exists in database.");
                 return;
