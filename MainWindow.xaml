@@ -102,11 +102,12 @@
                            Grid.RowSpan="3"
                            Content="Companies&#x0a; without all financial documents&#x0a; without IB symbol&#x0a; and without NotResolved entry:"></Label>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
-                       Grid.Row="4" Grid.RowSpan="2">
+                       Grid.Row="4" Grid.RowSpan="2"
+                         VirtualizingStackPanel.IsVirtualizing="True" >
                         <TextBox x:Name="txtCompanies" 
                             TextWrapping="Wrap"
                             AcceptsReturn="True"
-                            Text="{Binding XXXCompaniesWoDocumentsIbSymbolNotResolvedText}"></TextBox>
+                            Text="{Binding CompaniesWoDocumentsIbSymbolNotResolvedText}"></TextBox>
                     </ScrollViewer>
                     <Label Content="IB Port:"
                Grid.Column="3"

@@ -706,13 +706,25 @@ namespace IbDataTool
             }
         }
 
+        /// <summary>
+        /// UpdateInventory
+        /// </summary>
         private void UpdateInventory()
         {
             StocksTotal = QueryFactory.StocksTotalQuery.Run();
             CompaniesWoDocuments = QueryFactory.CompaniesWoDocumentsQuery.Run(Date);
             CompaniesWoDocumentsAndIbSymbol = QueryFactory.CompaniesWoDocumentsAndIbSymbolQuery.Run(Date);
             CompaniesWoDocumentsIbSymbolNotResolved = QueryFactory.CompaniesWoDocumentsIbSymbolNotResolved.Run(Date);
-            CompaniesWoDocumentsIbSymbolNotResolvedText = CompaniesWoDocumentsIbSymbolNotResolved.Aggregate((r, n) => r + "\r\n" + n);
+            
+            if(CompaniesWoDocumentsIbSymbolNotResolved.Count() > 1000)
+            {
+                CompaniesWoDocumentsIbSymbolNotResolvedText = CompaniesWoDocumentsIbSymbolNotResolved.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
+            }
+            else
+            {
+                CompaniesWoDocumentsIbSymbolNotResolvedText = CompaniesWoDocumentsIbSymbolNotResolved.Aggregate((r, n) => r + "\r\n" + n);
+            }
+            
         }
 
         /// <summary>
