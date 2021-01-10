@@ -33,6 +33,7 @@ namespace IbDataTool
         public static readonly DependencyProperty InventoryTextProperty;
         public static readonly DependencyProperty StocksTotalProperty;
         public static readonly DependencyProperty CompaniesWithoutDocumentsProperty;
+        public static readonly DependencyProperty CompaniesWithoutDocumentsAndIbSymbolProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -57,7 +58,8 @@ namespace IbDataTool
             InventoryTextProperty = DependencyProperty.Register("InventoryText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             StocksTotalProperty = DependencyProperty.Register("StocksTotal", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
             CompaniesWithoutDocumentsProperty = DependencyProperty.Register("CompaniesWithoutDocuments", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
-    }
+            CompaniesWithoutDocumentsAndIbSymbolProperty = DependencyProperty.Register("CompaniesWithoutDocumentsAndIbSymbol", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
+        }
 
         public MainWindowViewModel()
         {
@@ -145,6 +147,14 @@ namespace IbDataTool
             set { SetValue(CompaniesWithoutDocumentsProperty, value); }
         }
 
+        /// <summary>
+        /// CompaniesWithoutDocumentsAndIbSymbol
+        /// </summary>
+        public List<string> CompaniesWithoutDocumentsAndIbSymbol
+        {
+            get { return (List<string>)GetValue(CompaniesWithoutDocumentsAndIbSymbolProperty); }
+            set { SetValue(CompaniesWithoutDocumentsAndIbSymbolProperty, value); }
+        }
 
         /// <summary>
         /// Symbols
@@ -701,7 +711,7 @@ namespace IbDataTool
         {
             StocksTotal = QueryFactory.StocksTotalQuery.Run();
             CompaniesWithoutDocuments = QueryFactory.CompaniesWithoutDocumentsQuery.Run(Date);
-
+            CompaniesWithoutDocumentsAndIbSymbol = QueryFactory.CompaniesWithoutDocumentsAndIbSymbolQuery.Run(Date);
         }
 
         /// <summary>
@@ -712,7 +722,9 @@ namespace IbDataTool
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Total {StocksTotal} stocks in database.");
+            sb.AppendLine();
             sb.AppendLine($"{CompaniesWithoutDocuments.Count()} stocks without complete set of financial documents for the date {Date}.");
+            sb.AppendLine($"{CompaniesWithoutDocumentsAndIbSymbol.Count()} stocks without complete set of financial documents and without IB symbol (Table Contracts) for the date {Date}.");
             return sb.ToString();
         }
 
