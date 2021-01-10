@@ -35,6 +35,8 @@ namespace IbDataTool
         public RelayCommand CommandImportFundamentals { get; set; }
         public RelayCommand CommandImportContracts { get; set; }
 
+        #region Constructors
+
         static MainWindowViewModel()
         {
             PortIbProperty = DependencyProperty.Register("PortIb", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
@@ -49,7 +51,7 @@ namespace IbDataTool
             BackgroundLogProperty = DependencyProperty.Register("BackgroundLog", typeof(Brush), typeof(MainWindowViewModel), new PropertyMetadata(default(Brush)));
             DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ConnectedToIbProperty = DependencyProperty.Register("ConnectedToIb", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
-    }
+        }
 
         public MainWindowViewModel()
         {
@@ -62,27 +64,19 @@ namespace IbDataTool
 
             InitExchangeCombobox();
 
-            CommandConnectToIb = new RelayCommand(async (p) => await ConnectToIbAsync(p));
-            CommandImportFundamentals = new RelayCommand(async (p) => await ImportFundamentalsAsync(p));
-            CommandImportContracts = new RelayCommand(async (p) => await ImportContractsAsync(p));
+            CommandConnectToIb = new RelayCommand(async (p) => await CommandConnectToIbAsync(p));
+            CommandImportContracts = new RelayCommand(async (p) => await CommandImportContractsAsync(p));
+            CommandImportFundamentals = new RelayCommand(async (p) => await CommandImportFundamentalsAsync(p));
 
-            IbClient.Instance.NextValidId += NextValidIdHandler;
-            IbClient.Instance.ConnectionClosed += ConnectionClosedHandler;
-            IbClient.Instance.SymbolSamples += SymbolSamplesHandler;
-            IbClient.Instance.FundamentalData += FundamentalDataHandler;
+            IbClient.Instance.NextValidId += ResponseHandlerNextValidId;
+            IbClient.Instance.ConnectionClosed += ResponseHandlerConnectionClosed;
+            IbClient.Instance.SymbolSamples += ResponseHandlerSymbolSamples;
+            IbClient.Instance.FundamentalData += ResponseHandlerFundamentalData;
         }
 
-        /// <summary>
-        /// InitExchangeCombobox
-        /// </summary>
-        private void InitExchangeCombobox()
-        {
-            var exchanges = Configuration.Instance["ExchangesNorthAmerica"].Split(",").ToList();
-            exchanges.AddRange(Configuration.Instance["ExchangesAsia"].Split(",").ToList());
-            exchanges.AddRange(Configuration.Instance["ExchangesEurope"].Split(",").ToList());
+        #endregion
 
-            Exchanges = exchanges.Select(e => e.Trim()).ToList();
-        }
+        #region Properties
 
         /// <summary>
         /// PortIb
@@ -232,12 +226,16 @@ namespace IbDataTool
         /// </summary>
         public List<Contract> ContractsProcessed { get; set; }
 
+        #endregion
+
+        #region Commands
+
         /// <summary>
         /// ConnectToIbAsync
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        private async Task ConnectToIbAsync(object p)
+        private async Task CommandConnectToIbAsync(object p)
         {
             LogFundamentals.Clear();
             LogSymbols.Clear();
@@ -261,72 +259,11 @@ namespace IbDataTool
             });
         }
 
-
-        /// <summary>
-        /// ImportFundamentals
-        /// </summary>
-        /// <param name="p"></param>
-        private async Task ImportFundamentalsAsync(object p)
-        {
-            LogCurrent = LogFundamentals;
-            LogCurrent.Clear();
-            BackgroundLog = Brushes.Gray;
-
-            await Task.Run(() =>
-            {
-                try
-                {
-                    int portIb = 0;
-                    string host = string.Empty;
-                    int delay = 0;
-                    int timeout = 0;
-                    Dispatcher.Invoke(() =>
-                    {
-                        portIb = PortIb;
-                        host = Configuration.Instance["Localhost"];
-                        delay = Convert.ToInt32(Configuration.Instance["DelayFundamentals"]);
-                        timeout = Convert.ToInt32(Configuration.Instance["TimeoutIbConnection"]);
-                    });
-
-                    IbClient.Instance.Connect(host, portIb, 1);
-
-                    List<Contract> contractsToProcess = new List<Contract>();
-                    Dispatcher.Invoke(() =>
-                    {
-                        contractsToProcess = ContractsForIbFundamentalsQueries();
-                        ContractList = new List<Contract>(contractsToProcess);
-                        ContractsProcessed = new List<Contract>();
-                    });
-
-                    foreach (var contract in contractsToProcess)
-                    {
-                        CurrentContract = contract;
-                        IbClient.Instance.RequestFundamentals(contract);
-                        Thread.Sleep(delay);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    Dispatcher.Invoke(() => { LogCurrent.Add(exception.ToString()); });
-                }
-            });
-
-            if (ConnectedToIb)
-            {
-                LogCurrent.Add($"OK! Import completed.");
-                IbClient.Instance.Disonnect();
-            }
-            else
-            {
-                LogCurrent.Add($"ERROR! Error while connection to IB server.");
-            }
-        }
-
         /// <summary>
         /// ImportContracts
         /// </summary>
         /// <param name="p"></param>
-        private async Task ImportContractsAsync(object p)
+        private async Task CommandImportContractsAsync(object p)
         {
             if (String.IsNullOrWhiteSpace(ExchangeSelected))
             {
@@ -376,8 +313,153 @@ namespace IbDataTool
             {
                 LogCurrent.Add($"ERROR! Error while connection to IB server.");
             }
+        }
+
+        /// <summary>
+        /// ImportFundamentals
+        /// </summary>
+        /// <param name="p"></param>
+        private async Task CommandImportFundamentalsAsync(object p)
+        {
+            LogCurrent = LogFundamentals;
+            LogCurrent.Clear();
+            BackgroundLog = Brushes.Gray;
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    List<Contract> contractsToProcess = new List<Contract>();
+                    int delay = 0;
+                    Dispatcher.Invoke(() =>
+                    {
+                        contractsToProcess = ContractsForIbFundamentalsQueries();
+                        ContractList = new List<Contract>(contractsToProcess);
+                        ContractsProcessed = new List<Contract>();
+                        delay = Convert.ToInt32(Configuration.Instance["DelayFundamentals"]);
+                    });
+
+                    foreach (var contract in contractsToProcess)
+                    {
+                        CurrentContract = contract;
+                        IbClient.Instance.RequestFundamentals(contract);
+                        Thread.Sleep(delay);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Dispatcher.Invoke(() => { LogCurrent.Add(exception.ToString()); });
+                }
+            });
+
+            if (ConnectedToIb)
+            {
+                LogCurrent.Add($"OK! Import completed.");
+                IbClient.Instance.Disonnect();
+            }
+            else
+            {
+                LogCurrent.Add($"ERROR! Error while connection to IB server.");
+            }
+        }
+
+        #endregion
+
+        #region ResponseHandler
+
+        /// <summary>
+        /// ResponseHandlerNextValidId
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ResponseHandlerNextValidId(IBSampleApp.messages.ConnectionStatusMessage obj)
+        {
+            BackgroundLog = Brushes.White;
+            var message = string.Empty;
+
+            if (obj.IsConnected)
+            {
+                ConnectedToIb = true;
+                message = "OK! Connected to IB server.";
+            }
+            else
+            {
+                ConnectedToIb = false;
+                message = "ERROR! error connecting to IB server.";
+            }
+
+            LogSymbols.Add(message);
+            LogFundamentals.Add(message);
+        }
+
+        /// <summary>
+        /// ResponseHandlerConnectionClosed
+        /// </summary>
+        private void ResponseHandlerConnectionClosed()
+        {
+            ConnectedToIb = false;
+            LogCurrent.Add($"Connection to IB server closed.");
+        }
+
+        /// <summary>
+        /// ResponseHandlerSymbolSamples
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ResponseHandlerSymbolSamples(IBSampleApp.messages.SymbolSamplesMessage obj)
+        {
+            BackgroundLog = Brushes.White;
+            var message = string.Empty;
+
+            LogCurrent.Add($"{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}. {CompaniesList.Count()} companies more.");
+            CompaniesList.Remove(CurrentCompany);
+            var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeSelected);
+            LogCurrent.Add($"{contracts.Count()} symbols filtered out for company {CurrentCompany}");
+
+            try
+            {
+                if (!contracts.Any())
+                {
+                    ProcessNotResolved();
+                    ProcessDatabaseBatch();
+                    return;
+                }
+
+                ProcessResolved(contracts);
+                ProcessDatabaseBatch();
+            }
+            catch (Exception exception)
+            {
+                LogCurrent.Add(exception.ToString());
+            }
+        }
+
+
+        /// <summary>
+        /// ResponseHandlerFundamentalData
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ResponseHandlerFundamentalData(IBSampleApp.messages.FundamentalsMessage obj)
+        {
+            BackgroundLog = Brushes.White;
+            var message = string.Empty;
+
+            LogCurrent.Add($"Processing {CurrentContract.Company} ... {ContractList.Count()} companies more.");
+            ContractList.Remove(CurrentContract);
+            FundamentalsXmlDocument xmlDocument = XmlFactory.Instance.CreateXml(obj, Date);
+
+            string fmpSymbol = QueryFactory.SymbolByCompanyNameQuery.Run(CurrentContract.Company);
+            if (string.IsNullOrWhiteSpace(fmpSymbol))
+            {
+                LogCurrent.Add($"ERROR! FMP symbol for {CurrentContract.Company} could not be found.");
+                return;
+            }
+
+            SaveIncomeStatement(CurrentContract, fmpSymbol, xmlDocument);
+            SaveBalanceSheet(CurrentContract, fmpSymbol, xmlDocument);
+            SaveCashFlowStatement(CurrentContract, fmpSymbol, xmlDocument);
 
         }
+
+        #endregion
 
         /// <summary>
         /// ContractsForIbFundamentalsQueries
@@ -423,68 +505,15 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// NextValidIdHandler
+        /// InitExchangeCombobox
         /// </summary>
-        /// <param name="obj"></param>
-        private void NextValidIdHandler(IBSampleApp.messages.ConnectionStatusMessage obj)
+        private void InitExchangeCombobox()
         {
-            BackgroundLog = Brushes.White;
-            var message = string.Empty;
+            var exchanges = Configuration.Instance["ExchangesNorthAmerica"].Split(",").ToList();
+            exchanges.AddRange(Configuration.Instance["ExchangesAsia"].Split(",").ToList());
+            exchanges.AddRange(Configuration.Instance["ExchangesEurope"].Split(",").ToList());
 
-            if (obj.IsConnected)
-            {
-                ConnectedToIb = true;
-                message = "OK! Connected to IB server.";
-            }
-            else
-            {
-                ConnectedToIb = false;
-                message = "ERROR! error connecting to IB server.";
-            }
-
-            LogSymbols.Add(message);
-            LogFundamentals.Add(message);
-        }
-
-        /// <summary>
-        /// ConnectionClosedHandler
-        /// </summary>
-        private void ConnectionClosedHandler()
-        {
-            ConnectedToIb = false;
-            LogCurrent.Add($"Connection to IB server closed.");
-        }
-
-        /// <summary>
-        /// SymbolSamplesHandler
-        /// </summary>
-        /// <param name="obj"></param>
-        private void SymbolSamplesHandler(IBSampleApp.messages.SymbolSamplesMessage obj)
-        {
-            BackgroundLog = Brushes.White;
-            var message = string.Empty;
-
-            LogCurrent.Add($"{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}. {CompaniesList.Count()} companies more.");
-            CompaniesList.Remove(CurrentCompany);
-            var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeSelected);
-            LogCurrent.Add($"{contracts.Count()} symbols filtered out for company {CurrentCompany}");
-
-            try
-            {
-                if (!contracts.Any())
-                {
-                    ProcessNotResolved();
-                    ProcessDatabaseBatch();
-                    return;
-                }
-
-                ProcessResolved(contracts);
-                ProcessDatabaseBatch();
-            }
-            catch (Exception exception)
-            {
-                LogCurrent.Add(exception.ToString());
-            }
+            Exchanges = exchanges.Select(e => e.Trim()).ToList();
         }
 
         /// <summary>
@@ -544,29 +573,6 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// FundamentalDataHandler
-        /// </summary>
-        /// <param name="obj"></param>
-        private void FundamentalDataHandler(IBSampleApp.messages.FundamentalsMessage obj)
-        {
-            LogCurrent.Add($"Processing {CurrentContract.Company} ... {ContractList.Count()} companies more.");
-            ContractList.Remove(CurrentContract);
-            FundamentalsXmlDocument xmlDocument = XmlFactory.Instance.CreateXml(obj, Date);
-
-            string fmpSymbol = QueryFactory.SymbolByCompanyNameQuery.Run(CurrentContract.Company);
-            if (string.IsNullOrWhiteSpace(fmpSymbol))
-            {
-                LogCurrent.Add($"ERROR! FMP symbol for {CurrentContract.Company} could not be found.");
-                return;
-            }
-
-            SaveIncomeStatement(CurrentContract, fmpSymbol, xmlDocument);
-            SaveBalanceSheet(CurrentContract, fmpSymbol, xmlDocument);
-            SaveCashFlowStatement(CurrentContract, fmpSymbol, xmlDocument);
-
-        }
-
-        /// <summary>
         /// SaveIncomeStatement
         /// </summary>
         /// <param name="contract"></param>
@@ -599,7 +605,6 @@ namespace IbDataTool
                 LogCurrent.Add(exception.ToString());
             }
         }
-
 
         /// <summary>
         /// SaveBalanceSheet
