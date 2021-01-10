@@ -20,6 +20,7 @@ namespace IbDataTool.Queries
         private static StocksTotalQuery _stocksTotalQuery;
         private static CompaniesWoDocumentsQuery _companiesWoDocumentsQuery;
         private static CompaniesWoDocumentsAndIbSymbolQuery _companiesWoDocumentsAndIbSymbolQuery;
+        private static CompaniesWoDocumentsIbSymbolNotResolved _companiesWoDocumentsIbSymbolNotResolved;
 
         /// <summary>
         /// CompaniesWithoutIncomeQuery
@@ -183,5 +184,22 @@ namespace IbDataTool.Queries
             }
         }
 
+        /// <summary>
+        /// CompaniesWoDocumentsIbSymbolNotResolved
+        /// </summary>
+        public static CompaniesWoDocumentsIbSymbolNotResolved CompaniesWoDocumentsIbSymbolNotResolved
+        {
+            get
+            {
+                lock (lockObject)
+                {
+                    if (_companiesWoDocumentsIbSymbolNotResolved == null)
+                    {
+                        _companiesWoDocumentsIbSymbolNotResolved = new CompaniesWoDocumentsIbSymbolNotResolved();
+                    }
+                    return _companiesWoDocumentsIbSymbolNotResolved;
+                }
+            }
+        }
     }
 }

@@ -34,7 +34,8 @@ namespace IbDataTool
         public static readonly DependencyProperty StocksTotalProperty;
         public static readonly DependencyProperty CompaniesWoDocumentsProperty;
         public static readonly DependencyProperty CompaniesWoDocumentsAndIbSymbolProperty;
-        public static readonly DependencyProperty CompaniesWoDocumentsAndIbSymbolTextProperty;
+        public static readonly DependencyProperty CompaniesWoDocumentsIbSymbolNotResolvedProperty;
+        public static readonly DependencyProperty CompaniesWoDocumentsIbSymbolNotResolvedTextProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -60,11 +61,11 @@ namespace IbDataTool
             StocksTotalProperty = DependencyProperty.Register("StocksTotal", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
             CompaniesWoDocumentsProperty = DependencyProperty.Register("CompaniesWoDocuments", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             CompaniesWoDocumentsAndIbSymbolProperty = DependencyProperty.Register("CompaniesWoDocumentsAndIbSymbol", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
-            CompaniesWoDocumentsAndIbSymbolTextProperty = DependencyProperty.Register("CompaniesWoDocumentsAndIbSymbolText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            CompaniesWoDocumentsIbSymbolNotResolvedProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolved", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
+            CompaniesWoDocumentsIbSymbolNotResolvedTextProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolvedText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+        }
 
-    }
-
-    public MainWindowViewModel()
+        public MainWindowViewModel()
         {
             PortIb = Convert.ToInt32(Configuration.Instance["PortIb"]);
             ConnectionString = Configuration.Instance["ConnectionString"];
@@ -160,12 +161,21 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// Companies without all set of financial documents and without IB symbol as text
+        /// Companies without all set of financial documents, without IB symbol and without entries in NotResolved table.
         /// </summary>
-        public string CompaniesWoDocumentsAndIbSymbolText
+        public List<string> CompaniesWoDocumentsIbSymbolNotResolved
         {
-            get { return (string)GetValue(CompaniesWoDocumentsAndIbSymbolTextProperty); }
-            set { SetValue(CompaniesWoDocumentsAndIbSymbolTextProperty, value); }
+            get { return (List<string>)GetValue(CompaniesWoDocumentsIbSymbolNotResolvedProperty); }
+            set { SetValue(CompaniesWoDocumentsIbSymbolNotResolvedProperty, value); }
+        }
+
+        /// <summary>
+        /// Companies without all set of financial documents, without IB symbol and without entries in NotResolved table.
+        /// </summary>
+        public string CompaniesWoDocumentsIbSymbolNotResolvedText
+        {
+            get { return (string)GetValue(CompaniesWoDocumentsIbSymbolNotResolvedTextProperty); }
+            set { SetValue(CompaniesWoDocumentsIbSymbolNotResolvedTextProperty, value); }
         }
 
 
@@ -725,7 +735,8 @@ namespace IbDataTool
             StocksTotal = QueryFactory.StocksTotalQuery.Run();
             CompaniesWoDocuments = QueryFactory.CompaniesWoDocumentsQuery.Run(Date);
             CompaniesWoDocumentsAndIbSymbol = QueryFactory.CompaniesWoDocumentsAndIbSymbolQuery.Run(Date);
-            CompaniesWoDocumentsAndIbSymbolText = CompaniesWoDocumentsAndIbSymbol.Aggregate((r, n) => r + "\r\n" + n);
+            CompaniesWoDocumentsIbSymbolNotResolved = QueryFactory.CompaniesWoDocumentsIbSymbolNotResolved.Run(Date);
+            CompaniesWoDocumentsIbSymbolNotResolvedText = CompaniesWoDocumentsIbSymbolNotResolved.Aggregate((r, n) => r + "\r\n" + n);
         }
 
         /// <summary>
@@ -739,6 +750,7 @@ namespace IbDataTool
             sb.AppendLine();
             sb.AppendLine($"{CompaniesWoDocuments.Count()} stocks without complete set of financial documents for the date {Date}.");
             sb.AppendLine($"{CompaniesWoDocumentsAndIbSymbol.Count()} stocks without complete set of financial documents and without IB symbol (Table Contracts) for the date {Date}.");
+            sb.AppendLine($"{CompaniesWoDocumentsIbSymbolNotResolved.Count()} stocks without complete set of financial documents, without IB symbol and without entries in NotResolved table for the date {Date}.");
             return sb.ToString();
         }
 
