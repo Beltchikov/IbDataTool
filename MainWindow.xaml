@@ -53,11 +53,11 @@
                     Width="100"
                     HorizontalAlignment="Left"
                     Text="{Binding PortIb}"></TextBox>
-                    <Button Content="Import IB Contracts"
+                    <Button Content="Connect to IB"
                 Grid.Column="5"
                 Grid.Row="1"
                 Margin="2,2,2,2"
-                Command="{Binding CommandImportContracts}"></Button>
+                Command="{Binding CommandConnectToIb}"></Button>
                     <Label Content="Connectrion String:"
                Grid.Row="2"
                Grid.Column="3"></Label>
@@ -66,6 +66,12 @@
                  Grid.Column="4" 
                  Margin="2,2,2,2"
                  Text="{Binding ConnectionString}"></TextBox>
+                    <Button Content="Import IB Contracts"
+                Grid.Column="5"
+                Grid.Row="2"
+                Margin="2,2,2,2"
+                Command="{Binding CommandImportContracts}"
+                            IsEnabled="{Binding ConnectedToIb}"></Button>
                     <Label Grid.Row="3"
                            Grid.Column="3">Exchange:</Label>
                     <ComboBox Grid.Row="3"

@@ -29,7 +29,9 @@ namespace IbDataTool
         public static readonly DependencyProperty BackgroundLogProperty;
         public static readonly DependencyProperty DateProperty;
         public static readonly DependencyProperty LogCurrentProperty;
+        public static readonly DependencyProperty ConnectedToIbProperty;
 
+        public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
         public RelayCommand CommandImportContracts { get; set; }
 
@@ -46,7 +48,8 @@ namespace IbDataTool
             ExchangeSelectedProperty = DependencyProperty.Register("ExchangeSelected", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             BackgroundLogProperty = DependencyProperty.Register("BackgroundLog", typeof(Brush), typeof(MainWindowViewModel), new PropertyMetadata(default(Brush)));
             DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-        }
+            ConnectedToIbProperty = DependencyProperty.Register("ConnectedToIb", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
+    }
 
         public MainWindowViewModel()
         {
@@ -59,6 +62,7 @@ namespace IbDataTool
 
             InitExchangeCombobox();
 
+            CommandConnectToIb = new RelayCommand(async (p) => await ConnectToIbAsync(p));
             CommandImportFundamentals = new RelayCommand(async (p) => await ImportFundamentalsAsync(p));
             CommandImportContracts = new RelayCommand(async (p) => await ImportContractsAsync(p));
 
@@ -185,6 +189,15 @@ namespace IbDataTool
         }
 
         /// <summary>
+        /// ConnectedToIb
+        /// </summary>
+        public bool ConnectedToIb
+        {
+            get { return (bool)GetValue(ConnectedToIbProperty); }
+            set { SetValue(ConnectedToIbProperty, value); }
+        }
+
+        /// <summary>
         /// CompaniesList
         /// </summary>
         public List<string> CompaniesList { get; set; }
@@ -220,9 +233,33 @@ namespace IbDataTool
         public List<Contract> ContractsProcessed { get; set; }
 
         /// <summary>
-        /// ConnectedToIb
+        /// ConnectToIbAsync
         /// </summary>
-        public bool ConnectedToIb { get; set; }
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private async Task ConnectToIbAsync(object p)
+        {
+            LogFundamentals.Clear();
+            LogSymbols.Clear();
+            BackgroundLog = Brushes.Gray;
+
+            await Task.Run(() =>
+            {
+                int portIb = 0;
+                string host = string.Empty;
+                int delay = 0;
+                int timeout = 0;
+                Dispatcher.Invoke(() =>
+                {
+                    portIb = PortIb;
+                    host = Configuration.Instance["Localhost"];
+                    delay = Convert.ToInt32(Configuration.Instance["DelayFundamentals"]);
+                    timeout = Convert.ToInt32(Configuration.Instance["TimeoutIbConnection"]);
+                });
+
+                IbClient.Instance.Connect(host, portIb, 1);
+            });
+        }
 
 
         /// <summary>
@@ -304,21 +341,11 @@ namespace IbDataTool
             {
                 try
                 {
-                    int portIb = 0;
-                    string host = string.Empty;
+                    string[] companiesArray = null;
                     int delay = 0;
                     Dispatcher.Invoke(() =>
                     {
-                        portIb = PortIb;
-                        host = Configuration.Instance["Localhost"];
                         delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
-                    });
-
-                    IbClient.Instance.Connect(host, portIb, 1);
-
-                    string[] companiesArray = null;
-                    Dispatcher.Invoke(() =>
-                    {
                         companiesArray = Companies.Split("\r\n").Select(e => e.Trim()).Distinct().ToArray();
                         CompaniesList = companiesArray.ToList();
                         SymbolProcessed = new List<string>();
@@ -415,7 +442,8 @@ namespace IbDataTool
                 message = "ERROR! error connecting to IB server.";
             }
 
-            LogCurrent.Add(message);
+            LogSymbols.Add(message);
+            LogFundamentals.Add(message);
         }
 
         /// <summary>
@@ -423,6 +451,7 @@ namespace IbDataTool
         /// </summary>
         private void ConnectionClosedHandler()
         {
+            ConnectedToIb = false;
             LogCurrent.Add($"Connection to IB server closed.");
         }
 
@@ -432,6 +461,9 @@ namespace IbDataTool
         /// <param name="obj"></param>
         private void SymbolSamplesHandler(IBSampleApp.messages.SymbolSamplesMessage obj)
         {
+            BackgroundLog = Brushes.White;
+            var message = string.Empty;
+
             LogCurrent.Add($"{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}. {CompaniesList.Count()} companies more.");
             CompaniesList.Remove(CurrentCompany);
             var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeSelected);
