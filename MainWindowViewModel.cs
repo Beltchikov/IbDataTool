@@ -31,6 +31,8 @@ namespace IbDataTool
         public static readonly DependencyProperty LogCurrentProperty;
         public static readonly DependencyProperty ConnectedToIbProperty;
         public static readonly DependencyProperty InventoryTextProperty;
+        public static readonly DependencyProperty StocksTotalProperty;
+        public static readonly DependencyProperty StocksWithoutDocumentsProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -53,6 +55,8 @@ namespace IbDataTool
             DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ConnectedToIbProperty = DependencyProperty.Register("ConnectedToIb", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
             InventoryTextProperty = DependencyProperty.Register("InventoryText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            StocksTotalProperty = DependencyProperty.Register("StocksTotal", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
+            StocksWithoutDocumentsProperty = DependencyProperty.Register("StocksWithoutDocuments", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
     }
 
         public MainWindowViewModel()
@@ -236,6 +240,24 @@ namespace IbDataTool
         {
             get { return (string)GetValue(InventoryTextProperty); }
             set { SetValue(InventoryTextProperty, value); }
+        }
+
+        /// <summary>
+        /// StocksTotal
+        /// </summary>
+        public int StocksTotal
+        {
+            get { return (int)GetValue(StocksTotalProperty); }
+            set { SetValue(StocksTotalProperty, value); }
+        }
+
+        /// <summary>
+        /// StocksWithoutDocuments
+        /// </summary>
+        public int StocksWithoutDocuments
+        {
+            get { return (int)GetValue(StocksWithoutDocumentsProperty); }
+            set { SetValue(StocksWithoutDocumentsProperty, value); }
         }
 
         #endregion
