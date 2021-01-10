@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IbDataTool"
         mc:Ignorable="d"
-        Title="IB Data Tool" Height="900" Width="1400">
+        Title="IB Data Tool" Height="900" Width="1600">
     <Window.Resources>
         <local:MainWindowViewModel x:Key="ViewModel" />
     </Window.Resources>

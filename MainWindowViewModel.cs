@@ -31,10 +31,6 @@ namespace IbDataTool
         public static readonly DependencyProperty LogCurrentProperty;
         public static readonly DependencyProperty ConnectedToIbProperty;
         public static readonly DependencyProperty InventoryTextProperty;
-        public static readonly DependencyProperty StocksTotalProperty;
-        public static readonly DependencyProperty CompaniesWoDocumentsProperty;
-        public static readonly DependencyProperty CompaniesWoDocumentsAndIbSymbolProperty;
-        public static readonly DependencyProperty CompaniesWoDocumentsIbSymbolNotResolvedProperty;
         public static readonly DependencyProperty CompaniesWoDocumentsIbSymbolNotResolvedTextProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
@@ -58,10 +54,6 @@ namespace IbDataTool
             DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ConnectedToIbProperty = DependencyProperty.Register("ConnectedToIb", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
             InventoryTextProperty = DependencyProperty.Register("InventoryText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-            StocksTotalProperty = DependencyProperty.Register("StocksTotal", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
-            CompaniesWoDocumentsProperty = DependencyProperty.Register("CompaniesWoDocuments", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
-            CompaniesWoDocumentsAndIbSymbolProperty = DependencyProperty.Register("CompaniesWoDocumentsAndIbSymbol", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
-            CompaniesWoDocumentsIbSymbolNotResolvedProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolved", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             CompaniesWoDocumentsIbSymbolNotResolvedTextProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolvedText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
         }
 
@@ -145,29 +137,17 @@ namespace IbDataTool
         /// <summary>
         /// Companies without all set of financial documents
         /// </summary>
-        public List<string> CompaniesWoDocuments
-        {
-            get { return (List<string>)GetValue(CompaniesWoDocumentsProperty); }
-            set { SetValue(CompaniesWoDocumentsProperty, value); }
-        }
+        public List<string> CompaniesWoDocuments { get; set; }
 
         /// <summary>
         /// Companies without all set of financial documents and without IB symbol
         /// </summary>
-        public List<string> CompaniesWoDocumentsAndIbSymbol
-        {
-            get { return (List<string>)GetValue(CompaniesWoDocumentsAndIbSymbolProperty); }
-            set { SetValue(CompaniesWoDocumentsAndIbSymbolProperty, value); }
-        }
+        public List<string> CompaniesWoDocumentsAndIbSymbol { get; set; }
 
         /// <summary>
         /// Companies without all set of financial documents, without IB symbol and without entries in NotResolved table.
         /// </summary>
-        public List<string> CompaniesWoDocumentsIbSymbolNotResolved
-        {
-            get { return (List<string>)GetValue(CompaniesWoDocumentsIbSymbolNotResolvedProperty); }
-            set { SetValue(CompaniesWoDocumentsIbSymbolNotResolvedProperty, value); }
-        }
+        public List<string> CompaniesWoDocumentsIbSymbolNotResolved { get; set; }
 
         /// <summary>
         /// Companies without all set of financial documents, without IB symbol and without entries in NotResolved table.
@@ -280,11 +260,7 @@ namespace IbDataTool
         /// <summary>
         /// StocksTotal
         /// </summary>
-        public int StocksTotal
-        {
-            get { return (int)GetValue(StocksTotalProperty); }
-            set { SetValue(StocksTotalProperty, value); }
-        }
+        public int StocksTotal { get; set; }
 
         #endregion
 
