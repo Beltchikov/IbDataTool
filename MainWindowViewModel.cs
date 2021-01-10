@@ -32,7 +32,7 @@ namespace IbDataTool
         public static readonly DependencyProperty ConnectedToIbProperty;
         public static readonly DependencyProperty InventoryTextProperty;
         public static readonly DependencyProperty StocksTotalProperty;
-        public static readonly DependencyProperty StocksWithoutDocumentsProperty;
+        public static readonly DependencyProperty CompaniesWithoutDocumentsProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -56,7 +56,7 @@ namespace IbDataTool
             ConnectedToIbProperty = DependencyProperty.Register("ConnectedToIb", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
             InventoryTextProperty = DependencyProperty.Register("InventoryText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             StocksTotalProperty = DependencyProperty.Register("StocksTotal", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
-            StocksWithoutDocumentsProperty = DependencyProperty.Register("StocksWithoutDocuments", typeof(int), typeof(MainWindowViewModel), new PropertyMetadata(0));
+            CompaniesWithoutDocumentsProperty = DependencyProperty.Register("CompaniesWithoutDocuments", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
     }
 
         public MainWindowViewModel()
@@ -139,11 +139,12 @@ namespace IbDataTool
         /// <summary>
         /// CompaniesWithoutDocuments
         /// </summary>
-        public string CompaniesWithoutDocuments
+        public List<string> CompaniesWithoutDocuments
         {
-            get { return (string)GetValue(CompaniesProperty); }
-            set { SetValue(CompaniesProperty, value); }
+            get { return (List<string>)GetValue(CompaniesWithoutDocumentsProperty); }
+            set { SetValue(CompaniesWithoutDocumentsProperty, value); }
         }
+
 
         /// <summary>
         /// Symbols
@@ -252,15 +253,6 @@ namespace IbDataTool
             set { SetValue(StocksTotalProperty, value); }
         }
 
-        /// <summary>
-        /// StocksWithoutDocuments
-        /// </summary>
-        public int StocksWithoutDocuments
-        {
-            get { return (int)GetValue(StocksWithoutDocumentsProperty); }
-            set { SetValue(StocksWithoutDocumentsProperty, value); }
-        }
-
         #endregion
 
         #region Commands
@@ -318,7 +310,7 @@ namespace IbDataTool
                     Dispatcher.Invoke(() =>
                     {
                         delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
-                        companiesArray = CompaniesWithoutDocuments.Split("\r\n").Select(e => e.Trim()).Distinct().ToArray();
+                        companiesArray = CompaniesWithoutDocuments.ToArray();
                         CompaniesList = companiesArray.ToList();
                         SymbolProcessed = new List<string>();
                         CompaniesProcessed = new List<string>();
@@ -708,7 +700,7 @@ namespace IbDataTool
         private void UpdateInventory()
         {
             StocksTotal = QueryFactory.StocksTotalQuery.Run();
-            StocksWithoutDocuments= QueryFactory.StocksWithoutDocumentsQuery.Run(Date);
+            CompaniesWithoutDocuments = QueryFactory.CompaniesWithoutDocumentsQuery.Run(Date);
 
         }
 
@@ -720,7 +712,7 @@ namespace IbDataTool
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Total {StocksTotal} stocks in database.");
-            sb.AppendLine($"{StocksWithoutDocuments} stocks without complete set of financial documents for the date {Date}.");
+            sb.AppendLine($"{CompaniesWithoutDocuments.Count()} stocks without complete set of financial documents for the date {Date}.");
             return sb.ToString();
         }
 

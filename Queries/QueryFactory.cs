@@ -18,7 +18,7 @@ namespace IbDataTool.Queries
         private static ContractsByCompanyNameQuery _contractsByCompanyName;
         private static SymbolByCompanyNameQuery _symbolByCompanyNameQuery;
         private static StocksTotalQuery _stocksTotalQuery;
-        private static StocksWithoutDocumentsQuery _stocksWithoutDocumentsQuery;
+        private static CompaniesWithoutDocumentsQuery _stocksWithoutDocumentsQuery;
 
         /// <summary>
         /// CompaniesWithoutIncomeQuery
@@ -149,7 +149,7 @@ namespace IbDataTool.Queries
         /// <summary>
         /// StocksWithoutDocumentsQuery
         /// </summary>
-        public static StocksWithoutDocumentsQuery StocksWithoutDocumentsQuery
+        public static CompaniesWithoutDocumentsQuery CompaniesWithoutDocumentsQuery
         {
             get
             {
@@ -157,7 +157,7 @@ namespace IbDataTool.Queries
                 {
                     if (_stocksWithoutDocumentsQuery == null)
                     {
-                        _stocksWithoutDocumentsQuery = new StocksWithoutDocumentsQuery();
+                        _stocksWithoutDocumentsQuery = new CompaniesWithoutDocumentsQuery();
                     }
                     return _stocksWithoutDocumentsQuery;
                 }

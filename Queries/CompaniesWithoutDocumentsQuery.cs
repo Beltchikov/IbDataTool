@@ -7,11 +7,11 @@ using IbDataTool.Model;
 namespace IbDataTool.Queries
 {
     /// <summary>
-    /// StocksWithoutDocumentsQuery
+    /// CompaniesWithoutDocumentsQuery
     /// </summary>
-    public class StocksWithoutDocumentsQuery : DataContext
+    public class CompaniesWithoutDocumentsQuery : DataContext
     {
-        public int Run(string date)
+        public List<string> Run(string date)
         {
             return (from stock in Stocks
                     join income in IncomeStatements
@@ -26,7 +26,7 @@ namespace IbDataTool.Queries
                     where (stockIncome == null)
                     || (stockIncomeBalance == null)
                     || (stockIncomeBalanceCash == null)
-                    select stock.Name).Count();
+                    select stock.Name).ToList();
         }
     }
 }
