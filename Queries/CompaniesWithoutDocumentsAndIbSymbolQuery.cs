@@ -29,6 +29,7 @@ namespace IbDataTool.Queries
                     from stockIncomeBalanceCashContract in stockIncomeBalanceCashContractRecords.DefaultIfEmpty()
                     where ((stockIncome == null) || (stockIncomeBalance == null)|| (stockIncomeBalanceCash == null))
                     && stockIncomeBalanceCashContract == null
+                    && !string.IsNullOrWhiteSpace(stock.Name)
                     select stock.Name).ToList();
         }
     }

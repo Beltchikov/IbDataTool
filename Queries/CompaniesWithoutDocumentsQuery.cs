@@ -23,9 +23,8 @@ namespace IbDataTool.Queries
                     join cash in CashFlowStatements
                     on new { a = stock.Symbol, b = date } equals new { a = cash.Symbol, b = cash.Date } into stockIncomeBalanceCashRecords
                     from stockIncomeBalanceCash in stockIncomeBalanceCashRecords.DefaultIfEmpty()
-                    where (stockIncome == null)
-                    || (stockIncomeBalance == null)
-                    || (stockIncomeBalanceCash == null)
+                    where ((stockIncome == null) || (stockIncomeBalance == null) || (stockIncomeBalanceCash == null))
+                    && !string.IsNullOrWhiteSpace(stock.Name)
                     select stock.Name).ToList();
         }
     }
