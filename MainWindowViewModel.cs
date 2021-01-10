@@ -708,6 +708,8 @@ namespace IbDataTool
         private void UpdateInventory()
         {
             StocksTotal = QueryFactory.StocksTotalQuery.Run();
+            StocksWithoutDocuments= QueryFactory.StocksWithoutDocumentsQuery.Run(Date);
+
         }
 
         /// <summary>
@@ -718,7 +720,7 @@ namespace IbDataTool
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Total {StocksTotal} stocks in database.");
-            sb.AppendLine("{} stocks without complete set of financial documents for the date {Date}.");
+            sb.AppendLine($"{StocksWithoutDocuments} stocks without complete set of financial documents for the date {Date}.");
             return sb.ToString();
         }
 
