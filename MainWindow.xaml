@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IbDataTool"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1400">
+        Title="IB Data Tool" Height="900" Width="1400">
     <Window.Resources>
         <local:MainWindowViewModel x:Key="ViewModel" />
     </Window.Resources>
@@ -13,7 +13,48 @@
         <StaticResource ResourceKey="ViewModel" />
     </Window.DataContext>
     <Grid>
-        <TabControl>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="140"/>
+            <ColumnDefinition Width="900"/>
+            <ColumnDefinition Width="90"/>
+            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Label Content="IB Data Tool" 
+               FontSize="32" FontWeight="Bold"
+               Grid.Column="1"
+               Grid.ColumnSpan="2">
+        </Label>
+        <Label Content="Connection String:"
+                Grid.Row="1"
+               Grid.Column="1">
+        </Label>
+        <TextBox x:Name="txtConnectionString" 
+                     Grid.Row="1"                
+                     Margin="2,2,2,2"
+                 Grid.Column="2"
+                     Text="{Binding ConnectionString}">
+        </TextBox>
+        <Label Content="Date:"
+                   Grid.Row="1"
+                   Grid.Column="3"
+               HorizontalAlignment="Right"></Label>
+        <TextBox x:Name="txtDate" 
+               Text="{Binding Date}"
+                             Width="100"
+                             HorizontalAlignment="Left"
+                Grid.Column="4" 
+                Grid.Row="1" 
+                Margin="2,2,2,2"></TextBox>
+
+        <TabControl Grid.Row="2" Grid.ColumnSpan="7">
             <TabItem Header="Inventory">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -76,15 +117,7 @@
                 Grid.Row="1"
                 Margin="2,2,2,2"
                 Command="{Binding CommandConnectToIb}"></Button>
-                    <Label Content="Connectrion String:"
-               Grid.Row="2"
-               Grid.Column="3"></Label>
-                    <TextBox x:Name="txtConnectionStringContracts" 
-                 Grid.Row="2"                
-                 Grid.Column="4" 
-                 Margin="2,2,2,2"
-                 Text="{Binding ConnectionString}"></TextBox>
-                    <Button Content="Import IB Contracts"
+                <Button Content="Import IB Contracts"
                 Grid.Column="5"
                 Grid.Row="2"
                 Margin="2,2,2,2"
@@ -151,24 +184,6 @@
                     Margin="2,2,2,2"
                     Command="{Binding CommandImportFundamentals}"
                         IsEnabled="{Binding ConnectedToIb}"></Button>
-                    <Label Content="Connectrion String:"
-               Grid.Row="2"
-               Grid.Column="1"></Label>
-                    <TextBox x:Name="txtConnectionString" 
-                 Grid.Row="2"                
-                 Grid.Column="2" 
-                 Margin="2,2,2,2"
-                 Text="{Binding ConnectionString}"></TextBox>
-                    <Label Content="Date:"
-                   Grid.Row="3"
-                   Grid.Column="1"></Label>
-                    <TextBox x:Name="txtDate" 
-               Text="{Binding Date}"
-                             Width="100"
-                             HorizontalAlignment="Left"
-                Grid.Column="2" 
-                Grid.Row="3" 
-                Margin="2,2,2,2"></TextBox>
                     <Label Content="Log:"
                    Grid.Row="4"
                    Grid.Column="1"></Label>
