@@ -30,6 +30,7 @@ namespace IbDataTool
         public static readonly DependencyProperty DateProperty;
         public static readonly DependencyProperty LogCurrentProperty;
         public static readonly DependencyProperty ConnectedToIbProperty;
+        public static readonly DependencyProperty InventoryTextProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -51,7 +52,8 @@ namespace IbDataTool
             BackgroundLogProperty = DependencyProperty.Register("BackgroundLog", typeof(Brush), typeof(MainWindowViewModel), new PropertyMetadata(default(Brush)));
             DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ConnectedToIbProperty = DependencyProperty.Register("ConnectedToIb", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
-        }
+            InventoryTextProperty = DependencyProperty.Register("InventoryText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+    }
 
         public MainWindowViewModel()
         {
@@ -61,6 +63,7 @@ namespace IbDataTool
             LogFundamentals.Add("Willkommen! Enjoy the day (-:");
             BackgroundLog = Brushes.White;
             Date = "2019-12-31";
+            InventoryText = "TODO";
 
             InitExchangeCombobox();
 
@@ -225,6 +228,15 @@ namespace IbDataTool
         /// ContractsProcessed
         /// </summary>
         public List<Contract> ContractsProcessed { get; set; }
+
+        /// <summary>
+        /// InventoryText
+        /// </summary>
+        public string InventoryText
+        {
+            get { return (string)GetValue(InventoryTextProperty); }
+            set { SetValue(InventoryTextProperty, value); }
+        }
 
         #endregion
 
