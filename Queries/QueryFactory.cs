@@ -17,6 +17,7 @@ namespace IbDataTool.Queries
         private static CompaniesWithExactOneIbSymbolQuery _companiesWithExactOneIbSymbolQuery;
         private static ContractsByCompanyNameQuery _contractsByCompanyName;
         private static SymbolByCompanyNameQuery _symbolByCompanyNameQuery;
+        private static StocksTotalQuery _stocksTotalQuery;
 
         /// <summary>
         /// CompaniesWithoutIncomeQuery
@@ -122,6 +123,24 @@ namespace IbDataTool.Queries
                         _symbolByCompanyNameQuery = new SymbolByCompanyNameQuery();
                     }
                     return _symbolByCompanyNameQuery;
+                }
+            }
+        }
+
+        /// <summary>
+        /// StocksTotalQuery
+        /// </summary>
+        public static StocksTotalQuery StocksTotalQuery
+        {
+            get
+            {
+                lock (lockObject)
+                {
+                    if (_stocksTotalQuery == null)
+                    {
+                        _stocksTotalQuery = new StocksTotalQuery();
+                    }
+                    return _stocksTotalQuery;
                 }
             }
         }

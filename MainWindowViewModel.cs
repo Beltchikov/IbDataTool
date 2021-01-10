@@ -67,6 +67,7 @@ namespace IbDataTool
             LogFundamentals.Add("Willkommen! Enjoy the day (-:");
             BackgroundLog = Brushes.White;
             Date = "2019-12-31";
+            UpdateInventory();
             InventoryText = GenerateInventoryText();
 
             InitExchangeCombobox();
@@ -704,6 +705,11 @@ namespace IbDataTool
             }
         }
 
+        private void UpdateInventory()
+        {
+            StocksTotal = QueryFactory.StocksTotalQuery.Run();
+        }
+
         /// <summary>
         /// GenerateInventoryText
         /// </summary>
@@ -711,7 +717,7 @@ namespace IbDataTool
         private string GenerateInventoryText()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Total {} stocks in database.");
+            sb.AppendLine($"Total {StocksTotal} stocks in database.");
             sb.AppendLine("{} stocks without complete set of financial documents for the date {Date}.");
             return sb.ToString();
         }
