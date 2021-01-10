@@ -505,9 +505,16 @@ namespace IbDataTool
             ContractList.Remove(CurrentContract);
             FundamentalsXmlDocument xmlDocument = XmlFactory.Instance.CreateXml(obj, Date);
 
-            SaveIncomeStatement(CurrentContract, xmlDocument);
-            SaveBalanceSheet(CurrentContract, xmlDocument);
-            SaveCashFlowStatement(CurrentContract, xmlDocument);
+            string fmpSymbol = QueryFactory.SymbolByCompanyNameQuery.Run(CurrentContract.Company);
+            if(string.IsNullOrWhiteSpace(fmpSymbol))
+            {
+                LogFundamentals.Add($"ERROR! FMP symbol for {CurrentContract.Company} could not be found.");
+                return;
+            }
+
+            SaveIncomeStatement(CurrentContract, fmpSymbol, xmlDocument);
+            SaveBalanceSheet(CurrentContract, fmpSymbol, xmlDocument);
+            SaveCashFlowStatement(CurrentContract, fmpSymbol, xmlDocument);
 
         }
 
@@ -515,8 +522,9 @@ namespace IbDataTool
         /// SaveIncomeStatement
         /// </summary>
         /// <param name="contract"></param>
+        /// <param name="fmpSymbol"></param>
         /// <param name="xmlDocument"></param>
-        private void SaveIncomeStatement(Contract contract, FundamentalsXmlDocument xmlDocument)
+        private void SaveIncomeStatement(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument)
         {
             if (DataContext.Instance.IncomeStatements.Any(i => i.Symbol == contract.Symbol && i.Date == Date))
             {
@@ -526,7 +534,7 @@ namespace IbDataTool
 
             var incomeStatement = new IncomeStatement()
             {
-                Symbol = contract.Symbol,
+                Symbol = fmpSymbol,
                 Date = Date,
                 Revenue = xmlDocument.Revenue(),
                 OperatingIncome = xmlDocument.OperatingIncome(),
@@ -544,12 +552,14 @@ namespace IbDataTool
             }
         }
 
+
         /// <summary>
         /// SaveBalanceSheet
         /// </summary>
         /// <param name="contract"></param>
+        /// <param name="fmpSymbol"></param>
         /// <param name="xmlDocument"></param>
-        private void SaveBalanceSheet(Contract contract, FundamentalsXmlDocument xmlDocument)
+        private void SaveBalanceSheet(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument)
         {
             if (DataContext.Instance.BalanceSheets.Any(i => i.Symbol == contract.Symbol && i.Date == Date))
             {
@@ -559,7 +569,7 @@ namespace IbDataTool
 
             var balanceSheet = new BalanceSheet()
             {
-                Symbol = CurrentContract.Symbol,
+                Symbol = fmpSymbol,
                 Date = Date,
                 TotalStockholdersEquity = xmlDocument.Equity()
             };
@@ -578,8 +588,9 @@ namespace IbDataTool
         /// SaveCashFlowStatement
         /// </summary>
         /// <param name="contract"></param>
+        /// <param name="fmpSymbol"></param>
         /// <param name="xmlDocument"></param>
-        private void SaveCashFlowStatement(Contract contract, FundamentalsXmlDocument xmlDocument)
+        private void SaveCashFlowStatement(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument)
         {
             if (DataContext.Instance.CashFlowStatements.Any(i => i.Symbol == contract.Symbol && i.Date == Date))
             {
@@ -589,7 +600,7 @@ namespace IbDataTool
 
             var cashFlowStatement = new CashFlowStatement()
             {
-                Symbol = CurrentContract.Symbol,
+                Symbol = fmpSymbol,
                 Date = Date,
                 NetIncome = xmlDocument.NetIncomeFromCashStatement(),
                 OperatingCashFlow = xmlDocument.OperatingCashFlow(),
