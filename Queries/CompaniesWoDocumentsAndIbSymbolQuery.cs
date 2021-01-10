@@ -4,12 +4,13 @@ using System.Text;
 using System.Linq;
 using IbDataTool.Model;
 
+
 namespace IbDataTool.Queries
 {
     /// <summary>
-    /// CompaniesWithoutDocumentsQuery
+    /// Companies without all set of financial documents and without IB symbol
     /// </summary>
-    public class CompaniesWithoutDocumentsQuery : DataContext
+    public class CompaniesWoDocumentsAndIbSymbolQuery : DataContext
     {
         public List<string> Run(string date)
         {
@@ -23,7 +24,11 @@ namespace IbDataTool.Queries
                     join cash in CashFlowStatements
                     on new { a = stock.Symbol, b = date } equals new { a = cash.Symbol, b = cash.Date } into stockIncomeBalanceCashRecords
                     from stockIncomeBalanceCash in stockIncomeBalanceCashRecords.DefaultIfEmpty()
-                    where ((stockIncome == null) || (stockIncomeBalance == null) || (stockIncomeBalanceCash == null))
+                    join contract in Contracts
+                    on stock.Name equals contract.Company into stockIncomeBalanceCashContractRecords
+                    from stockIncomeBalanceCashContract in stockIncomeBalanceCashContractRecords.DefaultIfEmpty()
+                    where ((stockIncome == null) || (stockIncomeBalance == null)|| (stockIncomeBalanceCash == null))
+                    && stockIncomeBalanceCashContract == null
                     && !string.IsNullOrWhiteSpace(stock.Name)
                     select stock.Name).ToList();
         }

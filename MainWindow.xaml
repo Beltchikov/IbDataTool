@@ -103,7 +103,7 @@
                         <TextBox x:Name="txtCompanies" 
                             TextWrapping="Wrap"
                             AcceptsReturn="True"
-                            Text="{Binding CompaniesWithoutDocumentsAndIbSymbolText}"></TextBox>
+                            Text="{Binding CompaniesWoDocumentsAndIbSymbolText}"></TextBox>
                     </ScrollViewer>
                     <Label Content="IB Port:"
                Grid.Column="3"

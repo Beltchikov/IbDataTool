@@ -18,8 +18,8 @@ namespace IbDataTool.Queries
         private static ContractsByCompanyNameQuery _contractsByCompanyName;
         private static SymbolByCompanyNameQuery _symbolByCompanyNameQuery;
         private static StocksTotalQuery _stocksTotalQuery;
-        private static CompaniesWithoutDocumentsQuery _stocksWithoutDocumentsQuery;
-        private static CompaniesWithoutDocumentsAndIbSymbolQuery _companiesWithoutDocumentsAndIbSymbolQuery;
+        private static CompaniesWoDocumentsQuery _companiesWoDocumentsQuery;
+        private static CompaniesWoDocumentsAndIbSymbolQuery _companiesWoDocumentsAndIbSymbolQuery;
 
         /// <summary>
         /// CompaniesWithoutIncomeQuery
@@ -148,37 +148,37 @@ namespace IbDataTool.Queries
         }
 
         /// <summary>
-        /// StocksWithoutDocumentsQuery
+        /// Companies without all set of financial documents
         /// </summary>
-        public static CompaniesWithoutDocumentsQuery CompaniesWithoutDocumentsQuery
+        public static CompaniesWoDocumentsQuery CompaniesWoDocumentsQuery
         {
             get
             {
                 lock (lockObject)
                 {
-                    if (_stocksWithoutDocumentsQuery == null)
+                    if (_companiesWoDocumentsQuery == null)
                     {
-                        _stocksWithoutDocumentsQuery = new CompaniesWithoutDocumentsQuery();
+                        _companiesWoDocumentsQuery = new CompaniesWoDocumentsQuery();
                     }
-                    return _stocksWithoutDocumentsQuery;
+                    return _companiesWoDocumentsQuery;
                 }
             }
         }
 
         /// <summary>
-        /// CompaniesWithoutDocumentsAndIbSymbolQuery
+        /// Companies without all set of financial documents and without IB symbol
         /// </summary>
-        public static CompaniesWithoutDocumentsAndIbSymbolQuery CompaniesWithoutDocumentsAndIbSymbolQuery
+        public static CompaniesWoDocumentsAndIbSymbolQuery CompaniesWoDocumentsAndIbSymbolQuery
         {
             get
             {
                 lock (lockObject)
                 {
-                    if (_companiesWithoutDocumentsAndIbSymbolQuery == null)
+                    if (_companiesWoDocumentsAndIbSymbolQuery == null)
                     {
-                        _companiesWithoutDocumentsAndIbSymbolQuery = new CompaniesWithoutDocumentsAndIbSymbolQuery();
+                        _companiesWoDocumentsAndIbSymbolQuery = new CompaniesWoDocumentsAndIbSymbolQuery();
                     }
-                    return _companiesWithoutDocumentsAndIbSymbolQuery;
+                    return _companiesWoDocumentsAndIbSymbolQuery;
                 }
             }
         }
