@@ -97,13 +97,16 @@
                         <RowDefinition Height="10"/>
                     </Grid.RowDefinitions>
                     <Label Grid.Column="1" 
-                       Grid.Row="1" Content="Companies without all financial documents:"></Label>
+                           Height="120"
+                       Grid.Row="1" 
+                           Grid.RowSpan="3"
+                           Content="Companies&#x0a; without all financial documents&#x0a; without IB symbol&#x0a; and without NotResolved entry:"></Label>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
-                       Grid.Row="2" Grid.RowSpan="4">
+                       Grid.Row="4" Grid.RowSpan="2">
                         <TextBox x:Name="txtCompanies" 
                             TextWrapping="Wrap"
                             AcceptsReturn="True"
-                            Text="{Binding CompaniesWoDocumentsIbSymbolNotResolvedText}"></TextBox>
+                            Text="{Binding XXXCompaniesWoDocumentsIbSymbolNotResolvedText}"></TextBox>
                     </ScrollViewer>
                     <Label Content="IB Port:"
                Grid.Column="3"
