@@ -80,7 +80,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="250"/>
                         <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="110"/>
                         <ColumnDefinition Width="*"/>
@@ -90,20 +90,20 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="10"/>
                         <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="20"/>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="10"/>
                     </Grid.RowDefinitions>
                     <Label Grid.Column="1" 
-                       Grid.Row="1" Content="Companies:"></Label>
+                       Grid.Row="1" Content="Companies without all financial documents:"></Label>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
                        Grid.Row="2" Grid.RowSpan="4">
                         <TextBox x:Name="txtCompanies" 
                             TextWrapping="Wrap"
                             AcceptsReturn="True"
-                            Text="{Binding Companies}"></TextBox>
+                            Text="{Binding CompaniesWithoutDocuments}"></TextBox>
                     </ScrollViewer>
                     <Label Content="IB Port:"
                Grid.Column="3"
@@ -122,7 +122,7 @@
                 Command="{Binding CommandConnectToIb}"></Button>
                 <Button Content="Import IB Contracts"
                 Grid.Column="5"
-                Grid.Row="2"
+                Grid.Row="3"
                 Margin="2,2,2,2"
                 Command="{Binding CommandImportContracts}"
                             IsEnabled="{Binding ConnectedToIb}"></Button>

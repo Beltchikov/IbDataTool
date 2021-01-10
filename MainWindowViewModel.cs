@@ -137,9 +137,9 @@ namespace IbDataTool
         public bool RequestPending { get; set; }
 
         /// <summary>
-        /// Companies
+        /// CompaniesWithoutDocuments
         /// </summary>
-        public string Companies
+        public string CompaniesWithoutDocuments
         {
             get { return (string)GetValue(CompaniesProperty); }
             set { SetValue(CompaniesProperty, value); }
@@ -318,7 +318,7 @@ namespace IbDataTool
                     Dispatcher.Invoke(() =>
                     {
                         delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
-                        companiesArray = Companies.Split("\r\n").Select(e => e.Trim()).Distinct().ToArray();
+                        companiesArray = CompaniesWithoutDocuments.Split("\r\n").Select(e => e.Trim()).Distinct().ToArray();
                         CompaniesList = companiesArray.ToList();
                         SymbolProcessed = new List<string>();
                         CompaniesProcessed = new List<string>();
