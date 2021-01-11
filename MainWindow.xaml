@@ -80,7 +80,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition Width="550"/>
                         <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="110"/>
                         <ColumnDefinition Width="*"/>
@@ -90,19 +90,50 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="10"/>
                         <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="150"/>
+                        <RowDefinition Height="30"/>
                         <RowDefinition Height="20"/>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="10"/>
                     </Grid.RowDefinitions>
+                    <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="120"/>
+                      </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="FMP Exchanges:"></Label>
+                        <ListBox Grid.Row="1"
+                            x:Name="listBoxFmpExchages"
+                                 VerticalAlignment="Top"
+                                 Height="100">
+                       </ListBox>
+                        <Label 
+                           Grid.Column="2">IB Exchange:</Label>
+                        <ComboBox Grid.Column="2"
+                                  Grid.Row="1"
+                                  Grid.RowSpan="3"
+                        ItemsSource="{Binding Exchanges}"
+                              Width="250"
+                                  Height="100"
+                              HorizontalAlignment="Left"
+                                  VerticalAlignment="Top"
+                              SelectedItem="{Binding ExchangeSelected}">
+                        </ComboBox>
+                    </Grid>
                     <Label Grid.Column="1" 
-                           Height="120"
-                       Grid.Row="1" 
-                           Grid.RowSpan="4"
-                           Content="Companies&#x0a; without all financial documents&#x0a; without IB symbol&#x0a; and without NotResolved entry.&#x0a; Top 100 shown:"></Label>
+                      Grid.Row="6" 
+                           Grid.RowSpan="2"
+                           Content="Companies without all financial documents&#x0a; without IB symbol and without NotResolved entry:"></Label>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
-                       Grid.Row="5" Grid.RowSpan="1"
+                       Grid.Row="8" Grid.RowSpan="1"
                          VirtualizingStackPanel.IsVirtualizing="True" >
                         <TextBox x:Name="txtCompanies" 
                             TextWrapping="Wrap"
@@ -124,21 +155,12 @@
                 Grid.Row="1"
                 Margin="2,2,2,2"
                 Command="{Binding CommandConnectToIb}"></Button>
-                <Button Content="Import IB Contracts"
+                    <Button Content="Import IB Contracts"
                 Grid.Column="5"
-                Grid.Row="3"
+                Grid.Row="2"
                 Margin="2,2,2,2"
                 Command="{Binding CommandImportContracts}"
                             IsEnabled="{Binding ConnectedToIb}"></Button>
-                    <Label Grid.Row="3"
-                           Grid.Column="3">Exchange:</Label>
-                    <ComboBox Grid.Row="3"
-                           Grid.Column="4"
-                        ItemsSource="{Binding Exchanges}"
-                              Width="250"
-                              HorizontalAlignment="Left"
-                              SelectedItem="{Binding ExchangeSelected}">
-                    </ComboBox>
                     <Label Content="Log:"
                Grid.Row="4"
                Grid.Column="3"></Label>
@@ -148,6 +170,7 @@
                              Loaded="listBoxLog_Loaded"
                     Grid.Column="3" 
                     Grid.Row="5"
+                             Grid.RowSpan="4"
                     Grid.ColumnSpan="3">
                     </ListBox>
                 </Grid>
