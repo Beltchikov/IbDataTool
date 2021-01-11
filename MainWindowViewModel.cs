@@ -70,7 +70,7 @@ namespace IbDataTool
             LogFundamentals.Add("Willkommen! Enjoy the day (-:");
             BackgroundLog = Brushes.White;
             Date = "2019-12-31";
-            UpdateInventory();
+            UpdateDbState();
             InventoryText = GenerateInventoryText();
 
             InitExchangeCombobox();
@@ -139,21 +139,6 @@ namespace IbDataTool
         /// RequestPending
         /// </summary>
         public bool RequestPending { get; set; }
-
-        /// <summary>
-        /// Companies without all set of financial documents
-        /// </summary>
-        public List<string> CompaniesWoDocuments { get; set; }
-
-        /// <summary>
-        /// Companies without all set of financial documents and without IB symbol
-        /// </summary>
-        public List<string> CompaniesWoDocumentsAndIbSymbol { get; set; }
-
-        /// <summary>
-        /// Companies without all set of financial documents, without IB symbol and without entries in NotResolved table.
-        /// </summary>
-        public List<string> CompaniesWoDocumentsIbSymbolNotResolved { get; set; }
 
         /// <summary>
         /// Companies without all set of financial documents, without IB symbol and without entries in NotResolved table.
@@ -273,11 +258,6 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// StocksTotal
-        /// </summary>
-        public int StocksTotal { get; set; }
-
-        /// <summary>
         /// ExchangesFmp
         /// </summary>
         public List<string> ExchangesFmp
@@ -343,7 +323,7 @@ namespace IbDataTool
                     Dispatcher.Invoke(() =>
                     {
                         delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
-                        companiesArray = CompaniesWoDocuments.ToArray();
+                        companiesArray = DbState.CompaniesWoDocuments.ToArray();
                         CompaniesList = companiesArray.ToList();
                         SymbolProcessed = new List<string>();
                         CompaniesProcessed = new List<string>();
@@ -739,22 +719,22 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// UpdateInventory
+        /// UpdateDbState
         /// </summary>
-        private void UpdateInventory()
+        private void UpdateDbState()
         {
-            StocksTotal = QueryFactory.StocksTotalQuery.Run();
-            CompaniesWoDocuments = QueryFactory.CompaniesWoDocumentsQuery.Run(Date);
-            CompaniesWoDocumentsAndIbSymbol = QueryFactory.CompaniesWoDocumentsAndIbSymbolQuery.Run(Date);
-            CompaniesWoDocumentsIbSymbolNotResolved = QueryFactory.CompaniesWoDocumentsIbSymbolNotResolved.Run(Date);
+            DbState.StocksTotal = QueryFactory.StocksTotalQuery.Run();
+            DbState.CompaniesWoDocuments = QueryFactory.CompaniesWoDocumentsQuery.Run(Date);
+            DbState.CompaniesWoDocumentsAndIbSymbol = QueryFactory.CompaniesWoDocumentsAndIbSymbolQuery.Run(Date);
+            DbState.CompaniesWoDocumentsIbSymbolNotResolved = QueryFactory.CompaniesWoDocumentsIbSymbolNotResolved.Run(Date);
 
-            if (CompaniesWoDocumentsIbSymbolNotResolved.Count() > 1000)
+            if (DbState.CompaniesWoDocumentsIbSymbolNotResolved.Count() > 1000)
             {
-                CompaniesWoDocumentsIbSymbolNotResolvedText = CompaniesWoDocumentsIbSymbolNotResolved.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
+                CompaniesWoDocumentsIbSymbolNotResolvedText = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
             }
             else
             {
-                CompaniesWoDocumentsIbSymbolNotResolvedText = CompaniesWoDocumentsIbSymbolNotResolved.Aggregate((r, n) => r + "\r\n" + n);
+                CompaniesWoDocumentsIbSymbolNotResolvedText = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Aggregate((r, n) => r + "\r\n" + n);
             }
 
         }
@@ -766,11 +746,11 @@ namespace IbDataTool
         private string GenerateInventoryText()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"Total {StocksTotal} stocks in database.");
+            sb.AppendLine($"Total {DbState.StocksTotal} stocks in database.");
             sb.AppendLine();
-            sb.AppendLine($"{CompaniesWoDocuments.Count()} stocks without complete set of financial documents for the date {Date}.");
-            sb.AppendLine($"{CompaniesWoDocumentsAndIbSymbol.Count()} stocks without complete set of financial documents and without IB symbol (Table Contracts) for the date {Date}.");
-            sb.AppendLine($"{CompaniesWoDocumentsIbSymbolNotResolved.Count()} stocks without complete set of financial documents, without IB symbol and without entries in NotResolved table for the date {Date}.");
+            sb.AppendLine($"{DbState.CompaniesWoDocuments.Count()} stocks without complete set of financial documents for the date {Date}.");
+            sb.AppendLine($"{DbState.CompaniesWoDocumentsAndIbSymbol.Count()} stocks without complete set of financial documents and without IB symbol (Table Contracts) for the date {Date}.");
+            sb.AppendLine($"{DbState.CompaniesWoDocumentsIbSymbolNotResolved.Count()} stocks without complete set of financial documents, without IB symbol and without entries in NotResolved table for the date {Date}.");
             return sb.ToString();
         }
 
