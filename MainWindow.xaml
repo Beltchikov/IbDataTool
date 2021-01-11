@@ -118,7 +118,7 @@
                        </ListBox>
                         <Label 
                            Grid.Column="2">IB Exchange:</Label>
-                        <ComboBox Grid.Column="2"
+                        <ListBox Grid.Column="2"
                                   Grid.Row="1"
                                   Grid.RowSpan="3"
                         ItemsSource="{Binding Exchanges}"
@@ -126,8 +126,8 @@
                                   Height="100"
                               HorizontalAlignment="Left"
                                   VerticalAlignment="Top"
-                              SelectedItem="{Binding ExchangeSelected}">
-                        </ComboBox>
+                              SelectedItem="{Binding ExchangeIbSelected}">
+                        </ListBox>
                     </Grid>
                     <Label Grid.Column="1" 
                       Grid.Row="6" 

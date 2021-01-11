@@ -50,7 +50,7 @@ namespace IbDataTool
             CompaniesProperty = DependencyProperty.Register("Companies", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             SymbolsProperty = DependencyProperty.Register("Symbols", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ExchangesProperty = DependencyProperty.Register("Exchanges", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
-            ExchangeSelectedProperty = DependencyProperty.Register("ExchangeSelected", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            ExchangeSelectedProperty = DependencyProperty.Register("ExchangeIbSelected", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             BackgroundLogProperty = DependencyProperty.Register("BackgroundLog", typeof(Brush), typeof(MainWindowViewModel), new PropertyMetadata(default(Brush)));
             DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ConnectedToIbProperty = DependencyProperty.Register("ConnectedToIb", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
@@ -181,9 +181,9 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// ExchangeSelected
+        /// ExchangeIbSelected
         /// </summary>
-        public string ExchangeSelected
+        public string ExchangeIbSelected
         {
             get { return (string)GetValue(ExchangeSelectedProperty); }
             set { SetValue(ExchangeSelectedProperty, value); }
@@ -313,7 +313,7 @@ namespace IbDataTool
         /// <param name="p"></param>
         private async Task CommandImportContractsAsync(object p)
         {
-            if (String.IsNullOrWhiteSpace(ExchangeSelected))
+            if (String.IsNullOrWhiteSpace(ExchangeIbSelected))
             {
                 LogCurrent.Add($"ERROR! Exchange must be selected.");
                 return;
@@ -459,7 +459,7 @@ namespace IbDataTool
 
             LogCurrent.Add($"{obj.ContractDescriptions.Count()} symbols found for company {CurrentCompany}. {CompaniesList.Count()} companies more.");
             CompaniesList.Remove(CurrentCompany);
-            var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeSelected);
+            var contracts = SymbolManager.FilterSymbols(CurrentCompany, obj, ExchangeIbSelected);
             LogCurrent.Add($"{contracts.Count()} symbols filtered out for company {CurrentCompany}");
 
             try
