@@ -24,7 +24,7 @@ namespace IbDataTool
         public static readonly DependencyProperty LogFundamentalsProperty;
         public static readonly DependencyProperty CompaniesProperty;
         public static readonly DependencyProperty SymbolsProperty;
-        public static readonly DependencyProperty ExchangesProperty;
+        public static readonly DependencyProperty ExchangesIbProperty;
         public static readonly DependencyProperty ExchangeSelectedProperty;
         public static readonly DependencyProperty BackgroundLogProperty;
         public static readonly DependencyProperty DateProperty;
@@ -49,7 +49,7 @@ namespace IbDataTool
             LogCurrentProperty = DependencyProperty.Register("LogCurrent", typeof(ObservableCollection<string>), typeof(MainWindowViewModel), new PropertyMetadata(new ObservableCollection<string>()));
             CompaniesProperty = DependencyProperty.Register("Companies", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             SymbolsProperty = DependencyProperty.Register("Symbols", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-            ExchangesProperty = DependencyProperty.Register("Exchanges", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
+            ExchangesIbProperty = DependencyProperty.Register("ExchangesIb", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             ExchangeSelectedProperty = DependencyProperty.Register("ExchangeIbSelected", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             BackgroundLogProperty = DependencyProperty.Register("BackgroundLog", typeof(Brush), typeof(MainWindowViewModel), new PropertyMetadata(default(Brush)));
             DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
@@ -172,12 +172,12 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// Exchanges
+        /// ExchangesIb
         /// </summary>
-        public List<string> Exchanges
+        public List<string> ExchangesIb
         {
-            get { return (List<string>)GetValue(ExchangesProperty); }
-            set { SetValue(ExchangesProperty, value); }
+            get { return (List<string>)GetValue(ExchangesIbProperty); }
+            set { SetValue(ExchangesIbProperty, value); }
         }
 
         /// <summary>
@@ -561,7 +561,7 @@ namespace IbDataTool
             exchanges.AddRange(Configuration.Instance["ExchangesAsia"].Split(",").ToList());
             exchanges.AddRange(Configuration.Instance["ExchangesEurope"].Split(",").ToList());
 
-            Exchanges = exchanges.Select(e => e.Trim()).ToList();
+            ExchangesIb = exchanges.Select(e => e.Trim()).ToList();
         }
 
         /// <summary>
