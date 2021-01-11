@@ -111,6 +111,7 @@
                         </Grid.ColumnDefinitions>
                         <Label Content="FMP Exchanges:"></Label>
                         <ListBox Grid.Row="1"
+                                 ItemsSource="{Binding ExchangesFmp}"
                             x:Name="listBoxFmpExchages"
                                  VerticalAlignment="Top"
                                  Height="100">

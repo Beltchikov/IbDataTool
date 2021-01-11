@@ -32,6 +32,7 @@ namespace IbDataTool
         public static readonly DependencyProperty ConnectedToIbProperty;
         public static readonly DependencyProperty InventoryTextProperty;
         public static readonly DependencyProperty CompaniesWoDocumentsIbSymbolNotResolvedTextProperty;
+        public static readonly DependencyProperty ExchangesFmpProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -55,6 +56,7 @@ namespace IbDataTool
             ConnectedToIbProperty = DependencyProperty.Register("ConnectedToIb", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
             InventoryTextProperty = DependencyProperty.Register("InventoryText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             CompaniesWoDocumentsIbSymbolNotResolvedTextProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolvedText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            ExchangesFmpProperty = DependencyProperty.Register("ExchangesFmp", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
         }
 
         public MainWindowViewModel()
@@ -69,6 +71,7 @@ namespace IbDataTool
             InventoryText = GenerateInventoryText();
 
             InitExchangeCombobox();
+            InitExchangeFmpCombobox();
 
             CommandConnectToIb = new RelayCommand(async (p) => await CommandConnectToIbAsync(p));
             CommandImportContracts = new RelayCommand(async (p) => await CommandImportContractsAsync(p));
@@ -261,6 +264,15 @@ namespace IbDataTool
         /// StocksTotal
         /// </summary>
         public int StocksTotal { get; set; }
+
+        /// <summary>
+        /// ExchangesFmp
+        /// </summary>
+        public List<string> ExchangesFmp
+        {
+            get { return (List<string>)GetValue(ExchangesFmpProperty); }
+            set { SetValue(ExchangesFmpProperty, value); }
+        }
 
         #endregion
 
@@ -553,6 +565,14 @@ namespace IbDataTool
         }
 
         /// <summary>
+        /// InitExchangeFmpCombobox
+        /// </summary>
+        private void InitExchangeFmpCombobox()
+        {
+            ExchangesFmp = QueryFactory.ExchangesFmpQuery.Run();
+        }
+
+        /// <summary>
         /// ProcessResolved
         /// </summary>
         /// <param name="contracts"></param>
@@ -715,8 +735,8 @@ namespace IbDataTool
             CompaniesWoDocuments = QueryFactory.CompaniesWoDocumentsQuery.Run(Date);
             CompaniesWoDocumentsAndIbSymbol = QueryFactory.CompaniesWoDocumentsAndIbSymbolQuery.Run(Date);
             CompaniesWoDocumentsIbSymbolNotResolved = QueryFactory.CompaniesWoDocumentsIbSymbolNotResolved.Run(Date);
-            
-            if(CompaniesWoDocumentsIbSymbolNotResolved.Count() > 1000)
+
+            if (CompaniesWoDocumentsIbSymbolNotResolved.Count() > 1000)
             {
                 CompaniesWoDocumentsIbSymbolNotResolvedText = CompaniesWoDocumentsIbSymbolNotResolved.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
             }
@@ -724,7 +744,7 @@ namespace IbDataTool
             {
                 CompaniesWoDocumentsIbSymbolNotResolvedText = CompaniesWoDocumentsIbSymbolNotResolved.Aggregate((r, n) => r + "\r\n" + n);
             }
-            
+
         }
 
         /// <summary>

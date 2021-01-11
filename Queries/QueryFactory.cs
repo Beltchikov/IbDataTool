@@ -21,6 +21,7 @@ namespace IbDataTool.Queries
         private static CompaniesWoDocumentsQuery _companiesWoDocumentsQuery;
         private static CompaniesWoDocumentsAndIbSymbolQuery _companiesWoDocumentsAndIbSymbolQuery;
         private static CompaniesWoDocumentsIbSymbolNotResolved _companiesWoDocumentsIbSymbolNotResolved;
+        private static ExchangesFmpQuery _exchangesFmpQuery;
 
         /// <summary>
         /// CompaniesWithoutIncomeQuery
@@ -201,5 +202,24 @@ namespace IbDataTool.Queries
                 }
             }
         }
+
+        /// <summary>
+        /// ExchangesFmpQuery
+        /// </summary>
+        public static ExchangesFmpQuery ExchangesFmpQuery
+        {
+            get
+            {
+                lock (lockObject)
+                {
+                    if (_exchangesFmpQuery == null)
+                    {
+                        _exchangesFmpQuery = new ExchangesFmpQuery();
+                    }
+                    return _exchangesFmpQuery;
+                }
+            }
+        }
+
     }
 }
