@@ -31,7 +31,7 @@ namespace IbDataTool
         public static readonly DependencyProperty LogCurrentProperty;
         public static readonly DependencyProperty ConnectedToIbProperty;
         public static readonly DependencyProperty InventoryTextProperty;
-        public static readonly DependencyProperty CompaniesWoDocumentsIbSymbolNotResolvedTextProperty;
+        public static readonly DependencyProperty CompaniesForSymbolResolutionProperty;
         public static readonly DependencyProperty ExchangesFmpProperty;
         public static readonly DependencyProperty ExchangesFmpSelectedProperty;
 
@@ -56,7 +56,7 @@ namespace IbDataTool
             DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ConnectedToIbProperty = DependencyProperty.Register("ConnectedToIb", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
             InventoryTextProperty = DependencyProperty.Register("InventoryText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-            CompaniesWoDocumentsIbSymbolNotResolvedTextProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolvedText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            CompaniesForSymbolResolutionProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolvedText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ExchangesFmpProperty = DependencyProperty.Register("ExchangesFmp", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             ExchangesFmpSelectedProperty = DependencyProperty.Register("ExchangesFmpSelected", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
 
@@ -141,12 +141,12 @@ namespace IbDataTool
         public bool RequestPending { get; set; }
 
         /// <summary>
-        /// Companies without all set of financial documents, without IB symbol and without entries in NotResolved table.
+        /// CompaniesForSymbolResolution
         /// </summary>
-        public string CompaniesWoDocumentsIbSymbolNotResolvedText
+        public string CompaniesForSymbolResolution
         {
-            get { return (string)GetValue(CompaniesWoDocumentsIbSymbolNotResolvedTextProperty); }
-            set { SetValue(CompaniesWoDocumentsIbSymbolNotResolvedTextProperty, value); }
+            get { return (string)GetValue(CompaniesForSymbolResolutionProperty); }
+            set { SetValue(CompaniesForSymbolResolutionProperty, value); }
         }
 
 
@@ -730,11 +730,11 @@ namespace IbDataTool
 
             if (DbState.CompaniesWoDocumentsIbSymbolNotResolved.Count() > 1000)
             {
-                CompaniesWoDocumentsIbSymbolNotResolvedText = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
+                CompaniesForSymbolResolution = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
             }
             else
             {
-                CompaniesWoDocumentsIbSymbolNotResolvedText = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Aggregate((r, n) => r + "\r\n" + n);
+                CompaniesForSymbolResolution = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Aggregate((r, n) => r + "\r\n" + n);
             }
 
         }
