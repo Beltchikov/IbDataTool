@@ -33,6 +33,7 @@ namespace IbDataTool
         public static readonly DependencyProperty InventoryTextProperty;
         public static readonly DependencyProperty CompaniesWoDocumentsIbSymbolNotResolvedTextProperty;
         public static readonly DependencyProperty ExchangesFmpProperty;
+        public static readonly DependencyProperty ExchangesFmpSelectedProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -57,9 +58,11 @@ namespace IbDataTool
             InventoryTextProperty = DependencyProperty.Register("InventoryText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             CompaniesWoDocumentsIbSymbolNotResolvedTextProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolvedText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ExchangesFmpProperty = DependencyProperty.Register("ExchangesFmp", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
-        }
+            ExchangesFmpSelectedProperty = DependencyProperty.Register("ExchangesFmpSelected", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
 
-        public MainWindowViewModel()
+    }
+
+    public MainWindowViewModel()
         {
             PortIb = Convert.ToInt32(Configuration.Instance["PortIb"]);
             ConnectionString = Configuration.Instance["ConnectionString"];
@@ -187,6 +190,15 @@ namespace IbDataTool
         {
             get { return (string)GetValue(ExchangeSelectedProperty); }
             set { SetValue(ExchangeSelectedProperty, value); }
+        }
+
+        /// <summary>
+        /// ExchangesFmpSelected
+        /// </summary>
+        public List<string> ExchangesFmpSelected
+        {
+            get { return (List<string>)GetValue(ExchangesFmpSelectedProperty); }
+            set { SetValue(ExchangesFmpSelectedProperty, value); }
         }
 
         /// <summary>

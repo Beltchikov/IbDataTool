@@ -103,7 +103,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="120"/>
-                      </Grid.RowDefinitions>
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="250"/>
                             <ColumnDefinition Width="10"/>
@@ -113,9 +113,11 @@
                         <ListBox Grid.Row="1"
                                  ItemsSource="{Binding ExchangesFmp}"
                             x:Name="listBoxFmpExchages"
+                                 SelectionMode="Multiple"
+                                 SelectionChanged="listBoxFmpExchages_SelectionChanged"
                                  VerticalAlignment="Top"
                                  Height="100">
-                       </ListBox>
+                        </ListBox>
                         <Label 
                            Grid.Column="2">IB Exchange:</Label>
                         <ListBox Grid.Column="2"

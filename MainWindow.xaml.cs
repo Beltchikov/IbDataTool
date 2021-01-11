@@ -72,6 +72,14 @@ namespace IbDataTool
             return null;
         }
 
-
+        /// <summary>
+        /// listBoxFmpExchages_SelectionChanged
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void listBoxFmpExchages_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ((MainWindowViewModel)DataContext).ExchangesFmpSelected = ((ListBox)sender).SelectedItems.Cast<string>().ToList();
+        }
     }
 }
