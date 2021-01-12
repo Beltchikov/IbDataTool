@@ -384,7 +384,9 @@ namespace IbDataTool
                 DataContext.Instance.SaveChanges();
                 LogCurrent.Add("OK! All contracts saved in database.");
                 IbClient.Instance.Disonnect();
+                
                 UpdateDbState();
+                InventoryText = GenerateInventoryText();
                 UpdateCompaniesForSymbolResolution(ExchangesFmpSelected);
             }
             else
