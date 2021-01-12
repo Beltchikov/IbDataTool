@@ -384,6 +384,7 @@ namespace IbDataTool
                 DataContext.Instance.SaveChanges();
                 LogCurrent.Add("OK! All contracts saved in database.");
                 IbClient.Instance.Disonnect();
+                UpdateCompaniesForSymbolResolution(ExchangesFmpSelected);
             }
             else
             {
@@ -789,7 +790,16 @@ namespace IbDataTool
         {
             CompaniesForSymbolResolutionText = String.Empty;
             CompaniesForSymbolResolution = QueryFactory.CompaniesForSymbolResolutionQuery.Run(DbState.CompaniesWoDocumentsIbSymbolNotResolved, exchangesFmpSelected);
-            CompaniesForSymbolResolutionText = CompaniesForSymbolResolution.Aggregate((r, n) => r + "\r\n" + n);
+
+            if(CompaniesForSymbolResolution.Any())
+            {
+                CompaniesForSymbolResolutionText = CompaniesForSymbolResolution.Aggregate((r, n) => r + "\r\n" + n);
+            }
+            else
+            {
+                CompaniesForSymbolResolutionText = string.Empty;
+            }
+
             string text = $"Companies for Symbol resolution ({CompaniesForSymbolResolution.Count} selected)\r\nExchanges: {ExchangesFmpSelected.Aggregate((r, n) => r + ", " + n)} ";
             CompaniesForSymbolResolutionHeader = text;
         }
