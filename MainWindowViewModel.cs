@@ -380,7 +380,7 @@ namespace IbDataTool
 
             if (ConnectedToIb)
             {
-                LogCurrent.Add($"OK! Import completed.");
+                LogCurrent.Add($"OK! Import completed. IB symbols for remaining companies collide with existing symbols in table Contracts.");
                 DataContext.Instance.SaveChanges();
                 LogCurrent.Add("OK! All contracts saved in database.");
                 IbClient.Instance.Disonnect();
