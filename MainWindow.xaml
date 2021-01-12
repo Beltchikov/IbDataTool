@@ -135,7 +135,7 @@
                     <Label Grid.Column="1" 
                       Grid.Row="6" 
                            Grid.RowSpan="2"
-                           Content="Companies without all financial documents&#x0a; without IB symbol and without NotResolved entry:"></Label>
+                           Content="{Binding CompaniesForSymbolResolutionText}"></Label>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
                        Grid.Row="8" Grid.RowSpan="1"
                          VirtualizingStackPanel.IsVirtualizing="True" >

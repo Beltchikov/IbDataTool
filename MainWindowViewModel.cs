@@ -35,6 +35,7 @@ namespace IbDataTool
         public static readonly DependencyProperty ExchangesFmpProperty;
         public static readonly DependencyProperty ExchangesFmpSelectedProperty;
         public static readonly DependencyProperty ExchangeFmpInitialProperty;
+        public static readonly DependencyProperty CompaniesForSymbolResolutionTextProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -61,7 +62,7 @@ namespace IbDataTool
             ExchangesFmpProperty = DependencyProperty.Register("ExchangesFmp", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             ExchangesFmpSelectedProperty = DependencyProperty.Register("ExchangesFmpSelected", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             ExchangeFmpInitialProperty = DependencyProperty.Register("ExchangeFmpInitial", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-
+            CompaniesForSymbolResolutionTextProperty = DependencyProperty.Register("CompaniesForSymbolResolutionText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
         }
 
         public MainWindowViewModel()
@@ -188,9 +189,7 @@ namespace IbDataTool
             set
             {
                 SetValue(ExchangesFmpSelectedProperty, value);
-                CompaniesForSymbolResolution = String.Empty;
-                var listForSymbolResolution = QueryFactory.CompaniesForSymbolResolutionQuery.Run(DbState.CompaniesWoDocumentsIbSymbolNotResolved, ExchangesFmpSelected);
-                CompaniesForSymbolResolution = listForSymbolResolution.Aggregate((r, n) => r + "\r\n" + n);
+                UpdateCompaniesForSymbolResolution(value);
             }
         }
 
@@ -281,6 +280,15 @@ namespace IbDataTool
         {
             get { return (List<string>)GetValue(ExchangesFmpProperty); }
             set { SetValue(ExchangesFmpProperty, value); }
+        }
+
+        /// <summary>
+        /// CompaniesForSymbolResolutionText
+        /// </summary>
+        public string CompaniesForSymbolResolutionText
+        {
+            get { return (string)GetValue(CompaniesForSymbolResolutionTextProperty); }
+            set { SetValue(CompaniesForSymbolResolutionTextProperty, value); }
         }
 
         #endregion
@@ -770,6 +778,19 @@ namespace IbDataTool
             sb.AppendLine($"{DbState.CompaniesWoDocumentsAndIbSymbol.Count()} stocks without complete set of financial documents and without IB symbol (Table Contracts) for the date {Date}.");
             sb.AppendLine($"{DbState.CompaniesWoDocumentsIbSymbolNotResolved.Count()} stocks without complete set of financial documents, without IB symbol and without entries in NotResolved table for the date {Date}.");
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// UpdateCompaniesForSymbolResolution
+        /// </summary>
+        /// <param name="exchangesFmpSelected"></param>
+        private void UpdateCompaniesForSymbolResolution(List<string> exchangesFmpSelected)
+        {
+            CompaniesForSymbolResolution = String.Empty;
+            var listForSymbolResolution = QueryFactory.CompaniesForSymbolResolutionQuery.Run(DbState.CompaniesWoDocumentsIbSymbolNotResolved, exchangesFmpSelected);
+            CompaniesForSymbolResolution = listForSymbolResolution.Aggregate((r, n) => r + "\r\n" + n);
+            string text = $"Companies for Symbol resolution ({listForSymbolResolution.Count} selected)\r\nExchanges: {ExchangesFmpSelected.Aggregate((r, n) => r + ", " + n)} ";
+            CompaniesForSymbolResolutionText = text;
         }
 
     }
