@@ -135,14 +135,14 @@
                     <Label Grid.Column="1" 
                       Grid.Row="6" 
                            Grid.RowSpan="2"
-                           Content="{Binding CompaniesForSymbolResolutionText}"></Label>
+                           Content="{Binding CompaniesForSymbolResolutionHeader}"></Label>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
                        Grid.Row="8" Grid.RowSpan="1"
                          VirtualizingStackPanel.IsVirtualizing="True" >
                         <TextBox x:Name="txtCompanies" 
                             TextWrapping="Wrap"
                             AcceptsReturn="True"
-                            Text="{Binding CompaniesWoDocumentsIbSymbolNotResolvedText}"></TextBox>
+                            Text="{Binding CompaniesForSymbolResolutionText}"></TextBox>
                     </ScrollViewer>
                     <Label Content="IB Port:"
                Grid.Column="3"

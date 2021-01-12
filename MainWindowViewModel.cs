@@ -35,6 +35,7 @@ namespace IbDataTool
         public static readonly DependencyProperty ExchangesFmpProperty;
         public static readonly DependencyProperty ExchangesFmpSelectedProperty;
         public static readonly DependencyProperty ExchangeFmpInitialProperty;
+        public static readonly DependencyProperty CompaniesForSymbolResolutionHeaderProperty;
         public static readonly DependencyProperty CompaniesForSymbolResolutionTextProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
@@ -58,12 +59,13 @@ namespace IbDataTool
             DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ConnectedToIbProperty = DependencyProperty.Register("ConnectedToIb", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
             InventoryTextProperty = DependencyProperty.Register("InventoryText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-            CompaniesForSymbolResolutionProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolvedText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            CompaniesForSymbolResolutionProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolvedText", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             ExchangesFmpProperty = DependencyProperty.Register("ExchangesFmp", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             ExchangesFmpSelectedProperty = DependencyProperty.Register("ExchangesFmpSelected", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             ExchangeFmpInitialProperty = DependencyProperty.Register("ExchangeFmpInitial", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            CompaniesForSymbolResolutionHeaderProperty = DependencyProperty.Register("CompaniesForSymbolResolutionHeader", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             CompaniesForSymbolResolutionTextProperty = DependencyProperty.Register("CompaniesForSymbolResolutionText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-        }
+    }
 
         public MainWindowViewModel()
         {
@@ -146,9 +148,9 @@ namespace IbDataTool
         /// <summary>
         /// CompaniesForSymbolResolution
         /// </summary>
-        public string CompaniesForSymbolResolution
+        public List<string> CompaniesForSymbolResolution
         {
-            get { return (string)GetValue(CompaniesForSymbolResolutionProperty); }
+            get { return (List<string>)GetValue(CompaniesForSymbolResolutionProperty); }
             set { SetValue(CompaniesForSymbolResolutionProperty, value); }
         }
 
@@ -285,6 +287,15 @@ namespace IbDataTool
         /// <summary>
         /// CompaniesForSymbolResolutionText
         /// </summary>
+        public string CompaniesForSymbolResolutionHeader
+        {
+            get { return (string)GetValue(CompaniesForSymbolResolutionHeaderProperty); }
+            set { SetValue(CompaniesForSymbolResolutionHeaderProperty, value); }
+        }
+
+        /// <summary>
+        /// CompaniesForSymbolResolutionText
+        /// </summary>
         public string CompaniesForSymbolResolutionText
         {
             get { return (string)GetValue(CompaniesForSymbolResolutionTextProperty); }
@@ -348,7 +359,7 @@ namespace IbDataTool
                     Dispatcher.Invoke(() =>
                     {
                         delay = Convert.ToInt32(Configuration.Instance["DelayMathingSymbols"]);
-                        companiesArray = DbState.CompaniesWoDocuments.ToArray();
+                        companiesArray = CompaniesForSymbolResolution.ToArray();
                         CompaniesList = companiesArray.ToList();
                         SymbolProcessed = new List<string>();
                         CompaniesProcessed = new List<string>();
@@ -753,16 +764,6 @@ namespace IbDataTool
             DbState.CompaniesWoDocuments = QueryFactory.CompaniesWoDocumentsQuery.Run(Date);
             DbState.CompaniesWoDocumentsAndIbSymbol = QueryFactory.CompaniesWoDocumentsAndIbSymbolQuery.Run(Date);
             DbState.CompaniesWoDocumentsIbSymbolNotResolved = QueryFactory.CompaniesWoDocumentsIbSymbolNotResolved.Run(Date);
-
-            //if (DbState.CompaniesWoDocumentsIbSymbolNotResolved.Count() > 1000)
-            //{
-            //    CompaniesForSymbolResolution = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
-            //}
-            //else
-            //{
-            //    CompaniesForSymbolResolution = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Aggregate((r, n) => r + "\r\n" + n);
-            //}
-
         }
 
         /// <summary>
@@ -786,11 +787,11 @@ namespace IbDataTool
         /// <param name="exchangesFmpSelected"></param>
         private void UpdateCompaniesForSymbolResolution(List<string> exchangesFmpSelected)
         {
-            CompaniesForSymbolResolution = String.Empty;
-            var listForSymbolResolution = QueryFactory.CompaniesForSymbolResolutionQuery.Run(DbState.CompaniesWoDocumentsIbSymbolNotResolved, exchangesFmpSelected);
-            CompaniesForSymbolResolution = listForSymbolResolution.Aggregate((r, n) => r + "\r\n" + n);
-            string text = $"Companies for Symbol resolution ({listForSymbolResolution.Count} selected)\r\nExchanges: {ExchangesFmpSelected.Aggregate((r, n) => r + ", " + n)} ";
-            CompaniesForSymbolResolutionText = text;
+            CompaniesForSymbolResolutionText = String.Empty;
+            CompaniesForSymbolResolution = QueryFactory.CompaniesForSymbolResolutionQuery.Run(DbState.CompaniesWoDocumentsIbSymbolNotResolved, exchangesFmpSelected);
+            CompaniesForSymbolResolutionText = CompaniesForSymbolResolution.Aggregate((r, n) => r + "\r\n" + n);
+            string text = $"Companies for Symbol resolution ({CompaniesForSymbolResolution.Count} selected)\r\nExchanges: {ExchangesFmpSelected.Aggregate((r, n) => r + ", " + n)} ";
+            CompaniesForSymbolResolutionHeader = text;
         }
 
     }
