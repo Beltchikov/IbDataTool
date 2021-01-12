@@ -34,6 +34,7 @@ namespace IbDataTool
         public static readonly DependencyProperty CompaniesForSymbolResolutionProperty;
         public static readonly DependencyProperty ExchangesFmpProperty;
         public static readonly DependencyProperty ExchangesFmpSelectedProperty;
+        public static readonly DependencyProperty ExchangeFmpInitialProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -59,10 +60,11 @@ namespace IbDataTool
             CompaniesForSymbolResolutionProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolvedText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             ExchangesFmpProperty = DependencyProperty.Register("ExchangesFmp", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             ExchangesFmpSelectedProperty = DependencyProperty.Register("ExchangesFmpSelected", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
+            ExchangeFmpInitialProperty = DependencyProperty.Register("ExchangeFmpInitial", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
 
-    }
+        }
 
-    public MainWindowViewModel()
+        public MainWindowViewModel()
         {
             PortIb = Convert.ToInt32(Configuration.Instance["PortIb"]);
             ConnectionString = Configuration.Instance["ConnectionString"];
@@ -183,7 +185,22 @@ namespace IbDataTool
         public List<string> ExchangesFmpSelected
         {
             get { return (List<string>)GetValue(ExchangesFmpSelectedProperty); }
-            set { SetValue(ExchangesFmpSelectedProperty, value); }
+            set
+            {
+                SetValue(ExchangesFmpSelectedProperty, value);
+                CompaniesForSymbolResolution = String.Empty;
+                var listForSymbolResolution = QueryFactory.CompaniesForSymbolResolutionQuery.Run(DbState.CompaniesWoDocumentsIbSymbolNotResolved, ExchangesFmpSelected);
+                CompaniesForSymbolResolution = listForSymbolResolution.Aggregate((r, n) => r + "\r\n" + n);
+            }
+        }
+
+        /// <summary>
+        /// ExchangeFmpInitial
+        /// </summary>
+        public string ExchangeFmpInitial
+        {
+            get { return (string)GetValue(ExchangeFmpInitialProperty); }
+            set { SetValue(ExchangeFmpInitialProperty, value); }
         }
 
         /// <summary>
@@ -562,6 +579,7 @@ namespace IbDataTool
         private void InitExchangeFmpCombobox()
         {
             ExchangesFmp = QueryFactory.ExchangesFmpQuery.Run();
+            ExchangeFmpInitial = ExchangesFmp.First();
         }
 
         /// <summary>
@@ -728,14 +746,14 @@ namespace IbDataTool
             DbState.CompaniesWoDocumentsAndIbSymbol = QueryFactory.CompaniesWoDocumentsAndIbSymbolQuery.Run(Date);
             DbState.CompaniesWoDocumentsIbSymbolNotResolved = QueryFactory.CompaniesWoDocumentsIbSymbolNotResolved.Run(Date);
 
-            if (DbState.CompaniesWoDocumentsIbSymbolNotResolved.Count() > 1000)
-            {
-                CompaniesForSymbolResolution = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
-            }
-            else
-            {
-                CompaniesForSymbolResolution = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Aggregate((r, n) => r + "\r\n" + n);
-            }
+            //if (DbState.CompaniesWoDocumentsIbSymbolNotResolved.Count() > 1000)
+            //{
+            //    CompaniesForSymbolResolution = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
+            //}
+            //else
+            //{
+            //    CompaniesForSymbolResolution = DbState.CompaniesWoDocumentsIbSymbolNotResolved.Aggregate((r, n) => r + "\r\n" + n);
+            //}
 
         }
 

@@ -113,8 +113,9 @@
                         <ListBox Grid.Row="1"
                                  ItemsSource="{Binding ExchangesFmp}"
                             x:Name="listBoxFmpExchages"
-                                 SelectionMode="Multiple"
+                                 SelectionMode="Extended"
                                  SelectionChanged="listBoxFmpExchages_SelectionChanged"
+                                 SelectedItem="{Binding ExchangeFmpInitial, Mode=OneTime}"
                                  VerticalAlignment="Top"
                                  Height="100">
                         </ListBox>
