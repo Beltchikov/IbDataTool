@@ -618,7 +618,8 @@ namespace IbDataTool
                 {
                     if (DataContext.Instance.Contracts.Any(c => c.Symbol == contract.Symbol))
                     {
-                        LogCurrent.Add($"Symbol {contract.Symbol} exists already in database table Contracts.");
+                        LogCurrent.Add($"Symbol {contract.Symbol} exists already in database table Contracts. Adding record in table NotUnique.");
+                        DataContext.Instance.NotUnique.Add(new NotUnique { Symbol = contract.Symbol, Company = contract.Company });
                         continue;
                     }
                     DataContext.Instance.Contracts.Add(contract);

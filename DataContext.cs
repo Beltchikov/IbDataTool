@@ -60,5 +60,6 @@ namespace IbDataTool
         public DbSet<CashFlowStatement> CashFlowStatements { get; set; }
         public DbSet<Contract> Contracts { get; set; }
         public DbSet<NotResolved> NotResolved { get; set; }
+        public DbSet<NotUnique> NotUnique { get; set; }
     }
 }
