@@ -499,7 +499,7 @@ namespace IbDataTool
                 if (!contracts.Any())
                 {
                     ProcessNotResolved();
-                    ProcessDatabaseBatch();
+                    ProcessDatabaseBatch(); 
                     return;
                 }
 
@@ -779,6 +779,8 @@ namespace IbDataTool
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Total {DbState.StocksTotal} stocks in database.");
+            sb.AppendLine();
+            sb.AppendLine($"{DbState.StocksTotal - DbState.CompaniesWoDocuments.Count()} stocks ready to analyze.");
             sb.AppendLine();
             sb.AppendLine($"{DbState.CompaniesWoDocuments.Count()} stocks without complete set of financial documents for the date {Date}.");
             sb.AppendLine($"{DbState.CompaniesWoDocumentsAndIbSymbol.Count()} stocks without complete set of financial documents and without IB symbol (Table Contracts) for the date {Date}.");
