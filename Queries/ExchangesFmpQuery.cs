@@ -14,6 +14,7 @@ namespace IbDataTool.Queries
         public List<string> Run()
         {
             return (from stocks in Stocks
+                    where ! string.IsNullOrWhiteSpace(stocks.Exchange)
                     select stocks.Exchange
                     ).Distinct().ToList();
         }
