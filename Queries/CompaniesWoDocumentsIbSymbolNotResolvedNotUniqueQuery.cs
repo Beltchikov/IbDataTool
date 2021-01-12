@@ -6,7 +6,7 @@ using IbDataTool.Model;
 
 namespace IbDataTool.Queries
 {
-    public class CompaniesWoDocumentsIbSymbolNotResolved : DataContext
+    public class CompaniesWoDocumentsIbSymbolNotResolvedNotUniqueQuery : DataContext
     {
         public List<string> Run(string date)
         {
@@ -26,9 +26,13 @@ namespace IbDataTool.Queries
                     join notResolved in NotResolved
                     on stock.Name equals notResolved.Company into stockIncomeBalanceCashContractNotResolvedRecords
                     from stockIncomeBalanceCashContractNotResolved in stockIncomeBalanceCashContractNotResolvedRecords.DefaultIfEmpty()
+                    join notUnique in NotUnique
+                    on stock.Name equals notUnique.Company into stockIncomeBalanceCashContractNotResolvedNotUniqueRecords
+                    from stockIncomeBalanceCashContractNotResolvedNotUnique in stockIncomeBalanceCashContractNotResolvedNotUniqueRecords.DefaultIfEmpty()
                     where ((stockIncome == null) || (stockIncomeBalance == null) || (stockIncomeBalanceCash == null))
                     && stockIncomeBalanceCashContract == null
                     && stockIncomeBalanceCashContractNotResolved == null
+                    && stockIncomeBalanceCashContractNotResolvedNotUnique == null
                     && !string.IsNullOrWhiteSpace(stock.Name)
                     select stock.Name).ToList();
         }

@@ -20,7 +20,7 @@ namespace IbDataTool.Queries
         private static StocksTotalQuery _stocksTotalQuery;
         private static CompaniesWoDocumentsQuery _companiesWoDocumentsQuery;
         private static CompaniesWoDocumentsAndIbSymbolQuery _companiesWoDocumentsAndIbSymbolQuery;
-        private static CompaniesWoDocumentsIbSymbolNotResolved _companiesWoDocumentsIbSymbolNotResolved;
+        private static CompaniesWoDocumentsIbSymbolNotResolvedNotUniqueQuery _companiesWoDocumentsIbSymbolNotResolvedNotUniqueQuery;
         private static ExchangesFmpQuery _exchangesFmpQuery;
         private static CompaniesForSymbolResolutionQuery _companiesForSymbolResolutionQuery;
 
@@ -187,19 +187,19 @@ namespace IbDataTool.Queries
         }
 
         /// <summary>
-        /// CompaniesWoDocumentsIbSymbolNotResolved
+        /// CompaniesWoDocumentsIbSymbolNotResolvedNotUniqueQuery
         /// </summary>
-        public static CompaniesWoDocumentsIbSymbolNotResolved CompaniesWoDocumentsIbSymbolNotResolved
+        public static CompaniesWoDocumentsIbSymbolNotResolvedNotUniqueQuery CompaniesWoDocumentsIbSymbolNotResolvedNotUniqueQuery
         {
             get
             {
                 lock (lockObject)
                 {
-                    if (_companiesWoDocumentsIbSymbolNotResolved == null)
+                    if (_companiesWoDocumentsIbSymbolNotResolvedNotUniqueQuery == null)
                     {
-                        _companiesWoDocumentsIbSymbolNotResolved = new CompaniesWoDocumentsIbSymbolNotResolved();
+                        _companiesWoDocumentsIbSymbolNotResolvedNotUniqueQuery = new CompaniesWoDocumentsIbSymbolNotResolvedNotUniqueQuery();
                     }
-                    return _companiesWoDocumentsIbSymbolNotResolved;
+                    return _companiesWoDocumentsIbSymbolNotResolvedNotUniqueQuery;
                 }
             }
         }

@@ -768,7 +768,7 @@ namespace IbDataTool
             DbState.StocksTotal = QueryFactory.StocksTotalQuery.Run();
             DbState.CompaniesWoDocuments = QueryFactory.CompaniesWoDocumentsQuery.Run(Date);
             DbState.CompaniesWoDocumentsAndIbSymbol = QueryFactory.CompaniesWoDocumentsAndIbSymbolQuery.Run(Date);
-            DbState.CompaniesWoDocumentsIbSymbolNotResolved = QueryFactory.CompaniesWoDocumentsIbSymbolNotResolved.Run(Date);
+            DbState.CompaniesWoDocumentsIbSymbolNotResolvedNotUnique = QueryFactory.CompaniesWoDocumentsIbSymbolNotResolvedNotUniqueQuery.Run(Date);
         }
 
         /// <summary>
@@ -782,7 +782,7 @@ namespace IbDataTool
             sb.AppendLine();
             sb.AppendLine($"{DbState.CompaniesWoDocuments.Count()} stocks without complete set of financial documents for the date {Date}.");
             sb.AppendLine($"{DbState.CompaniesWoDocumentsAndIbSymbol.Count()} stocks without complete set of financial documents and without IB symbol (Table Contracts) for the date {Date}.");
-            sb.AppendLine($"{DbState.CompaniesWoDocumentsIbSymbolNotResolved.Count()} stocks without complete set of financial documents, without IB symbol and without entries in NotResolved table for the date {Date}.");
+            sb.AppendLine($"{DbState.CompaniesWoDocumentsIbSymbolNotResolvedNotUnique.Count()} stocks without complete set of financial documents, without IB symbol and without entries in NotResolved table for the date {Date}.");
             return sb.ToString();
         }
 
@@ -793,7 +793,7 @@ namespace IbDataTool
         private void UpdateCompaniesForSymbolResolution(List<string> exchangesFmpSelected)
         {
             CompaniesForSymbolResolutionText = String.Empty;
-            CompaniesForSymbolResolution = QueryFactory.CompaniesForSymbolResolutionQuery.Run(DbState.CompaniesWoDocumentsIbSymbolNotResolved, exchangesFmpSelected);
+            CompaniesForSymbolResolution = QueryFactory.CompaniesForSymbolResolutionQuery.Run(DbState.CompaniesWoDocumentsIbSymbolNotResolvedNotUnique, exchangesFmpSelected);
 
             if(CompaniesForSymbolResolution.Any())
             {
