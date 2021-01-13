@@ -182,7 +182,8 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="200"/>
                         <ColumnDefinition Width="10"/>
@@ -196,35 +197,40 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="10"/>
                     </Grid.RowDefinitions>
+                    <CheckBox Content="Select top 1000 companies"
+                              Grid.Column="1"
+                              Grid.Row="1"
+                              VerticalAlignment="Center"
+                              IsChecked="{Binding SelectTop1000}"></CheckBox>
                     <Label Content="IB Port:"
-               Grid.Column="1"
+               Grid.Column="2"
                Grid.Row="1"></Label>
                     <TextBox x:Name="txtPortIb" 
-                    Grid.Column="2"
+                    Grid.Column="3"
                     Grid.Row="1"
                     Margin="2,2,2,2"
                     Width="100"
                     HorizontalAlignment="Left"
                     Text="{Binding PortIb}"></TextBox>
                     <Button Content="Connect to IB"
-                    Grid.Column="3"
+                    Grid.Column="4"
                     Grid.Row="1"
                     Margin="2,2,2,2"
                     Command="{Binding CommandConnectToIb}"></Button>
                     <Button Content="Import Fundamentals"
-                    Grid.Column="3"
+                    Grid.Column="4"
                     Grid.Row="2"
                     Margin="2,2,2,2"
                     Command="{Binding CommandImportFundamentals}"
                         IsEnabled="{Binding ConnectedToIb}"></Button>
                     <Label Content="Log:"
                    Grid.Row="4"
-                   Grid.Column="1"></Label>
+                   Grid.Column="2"></Label>
                     <ListBox ItemsSource="{Binding LogFundamentals}"
                     x:Name="listBoxLogFundamentals"  
                     Background="{Binding BackgroundLog}"
                              Loaded="listBoxLog_Loaded"
-                    Grid.Column="2" 
+                    Grid.Column="3" 
                     Grid.Row="4"
                     Grid.RowSpan="2">
                     </ListBox>

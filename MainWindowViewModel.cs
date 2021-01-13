@@ -38,6 +38,7 @@ namespace IbDataTool
         public static readonly DependencyProperty CompaniesForSymbolResolutionHeaderProperty;
         public static readonly DependencyProperty CompaniesForSymbolResolutionTextProperty;
         public static readonly DependencyProperty DatesProperty;
+        public static readonly DependencyProperty SelectTop1000Property;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -67,7 +68,8 @@ namespace IbDataTool
             CompaniesForSymbolResolutionHeaderProperty = DependencyProperty.Register("CompaniesForSymbolResolutionHeader", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             CompaniesForSymbolResolutionTextProperty = DependencyProperty.Register("CompaniesForSymbolResolutionText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             DatesProperty = DependencyProperty.Register("Dates", typeof(ObservableCollection<string>), typeof(MainWindowViewModel), new PropertyMetadata(new ObservableCollection<string>()));
-        }
+            SelectTop1000Property = DependencyProperty.Register("SelectTop1000", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
+    }
 
         public MainWindowViewModel()
         {
@@ -312,6 +314,15 @@ namespace IbDataTool
         {
             get { return (ObservableCollection<string>)GetValue(DatesProperty); }
             set { SetValue(DatesProperty, value); }
+        }
+
+        /// <summary>
+        /// SelectTop1000
+        /// </summary>
+        public bool SelectTop1000
+        {
+            get { return (bool)GetValue(SelectTop1000Property); }
+            set { SetValue(SelectTop1000Property, value); }
         }
 
         #endregion
