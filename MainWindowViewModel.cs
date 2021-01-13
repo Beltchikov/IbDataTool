@@ -81,13 +81,15 @@ namespace IbDataTool
             LogSymbols.Add("Willkommen! Enjoy the day (-:");
             LogFundamentals.Add("Willkommen! Enjoy the day (-:");
             BackgroundLog = Brushes.White;
-
+            
             InitDatesCombobok();
             InitExchangeCombobox();
             InitExchangeFmpCombobox();
 
             UpdateDbState();
             InventoryText = GenerateInventoryText();
+            SelectTop1000 = true;
+            UpdateCompaniesForFundamenatals(SelectTop1000);
 
             CommandConnectToIb = new RelayCommand(async (p) => await CommandConnectToIbAsync(p));
             CommandImportContracts = new RelayCommand(async (p) => await CommandImportContractsAsync(p));
@@ -293,7 +295,7 @@ namespace IbDataTool
         }
 
         /// <summary>
-        /// CompaniesForSymbolResolutionText
+        /// CompaniesForSymbolResolutionHeader
         /// </summary>
         public string CompaniesForSymbolResolutionHeader
         {
@@ -858,6 +860,31 @@ namespace IbDataTool
 
             string text = $"Companies for Symbol resolution ({CompaniesForSymbolResolution.Count} selected)\r\nExchanges: {ExchangesFmpSelected.Aggregate((r, n) => r + ", " + n)} ";
             CompaniesForSymbolResolutionHeader = text;
+        }
+
+        /// <summary>
+        /// UpdateCompaniesForFundamenatals
+        /// </summary>
+        /// <param name="selectTop1000"></param>
+        private void UpdateCompaniesForFundamenatals(bool selectTop1000)
+        {
+            CompaniesForFundamenatalsText = String.Empty;
+            
+            if (DbState.CompaniesWoDocumentsButWithIbSymbol.Any())
+            {
+                if (selectTop1000)
+                {
+                    CompaniesForFundamenatalsText = DbState.CompaniesWoDocumentsButWithIbSymbol.Aggregate((r, n) => r + "\r\n" + n);
+                }
+                else
+                {
+                    CompaniesForFundamenatalsText = DbState.CompaniesWoDocumentsButWithIbSymbol.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
+                }
+            }
+            else
+            {
+                CompaniesForFundamenatalsText = string.Empty;
+            }
         }
 
         /// <summary>
