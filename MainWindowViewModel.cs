@@ -57,7 +57,7 @@ namespace IbDataTool
             ExchangesIbProperty = DependencyProperty.Register("ExchangesIb", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
             ExchangeSelectedProperty = DependencyProperty.Register("ExchangeIbSelected", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             BackgroundLogProperty = DependencyProperty.Register("BackgroundLog", typeof(Brush), typeof(MainWindowViewModel), new PropertyMetadata(default(Brush)));
-            DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+            DateProperty = DependencyProperty.Register("Date", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty, DatePropertyChanged));
             ConnectedToIbProperty = DependencyProperty.Register("ConnectedToIb", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
             InventoryTextProperty = DependencyProperty.Register("InventoryText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             CompaniesForSymbolResolutionProperty = DependencyProperty.Register("CompaniesWoDocumentsIbSymbolNotResolvedText", typeof(List<string>), typeof(MainWindowViewModel), new PropertyMetadata(new List<string>()));
@@ -827,6 +827,23 @@ namespace IbDataTool
 
             string text = $"Companies for Symbol resolution ({CompaniesForSymbolResolution.Count} selected)\r\nExchanges: {ExchangesFmpSelected.Aggregate((r, n) => r + ", " + n)} ";
             CompaniesForSymbolResolutionHeader = text;
+        }
+
+        /// <summary>
+        /// DatePropertyChanged
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void DatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            MainWindowViewModel instance = d as MainWindowViewModel;
+            if (instance == null)
+            {
+                return;
+            }
+
+            instance.UpdateDbState();
+            instance.InventoryText = instance.GenerateInventoryText();
         }
 
     }

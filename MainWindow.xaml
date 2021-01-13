@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IbDataTool"
+         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         mc:Ignorable="d"
         Title="IB Data Tool" Height="900" Width="1600">
     <Window.Resources>
@@ -50,7 +51,7 @@
        <ComboBox x:Name="cmbYear" Grid.Column="4" 
                 Grid.Row="1" 
                   ItemsSource="{Binding Dates}"
-                  SelectedItem="{Binding Date}"
+                  SelectedItem="{Binding Date, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, diag:PresentationTraceSources.TraceLevel=High}"
                   IsSynchronizedWithCurrentItem="True">
         </ComboBox>
         <TabControl Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5">
