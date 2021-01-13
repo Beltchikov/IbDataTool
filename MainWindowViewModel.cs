@@ -39,6 +39,7 @@ namespace IbDataTool
         public static readonly DependencyProperty CompaniesForSymbolResolutionTextProperty;
         public static readonly DependencyProperty DatesProperty;
         public static readonly DependencyProperty SelectTop1000Property;
+        public static readonly DependencyProperty CompaniesForFundamenatalsTextProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -69,7 +70,9 @@ namespace IbDataTool
             CompaniesForSymbolResolutionTextProperty = DependencyProperty.Register("CompaniesForSymbolResolutionText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             DatesProperty = DependencyProperty.Register("Dates", typeof(ObservableCollection<string>), typeof(MainWindowViewModel), new PropertyMetadata(new ObservableCollection<string>()));
             SelectTop1000Property = DependencyProperty.Register("SelectTop1000", typeof(bool), typeof(MainWindowViewModel), new PropertyMetadata(false));
-    }
+            CompaniesForFundamenatalsTextProperty = DependencyProperty.Register("CompaniesForFundamenatalsText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
+
+        }
 
         public MainWindowViewModel()
         {
@@ -78,11 +81,11 @@ namespace IbDataTool
             LogSymbols.Add("Willkommen! Enjoy the day (-:");
             LogFundamentals.Add("Willkommen! Enjoy the day (-:");
             BackgroundLog = Brushes.White;
-            
+
             InitDatesCombobok();
             InitExchangeCombobox();
             InitExchangeFmpCombobox();
-            
+
             UpdateDbState();
             InventoryText = GenerateInventoryText();
 
@@ -323,6 +326,15 @@ namespace IbDataTool
         {
             get { return (bool)GetValue(SelectTop1000Property); }
             set { SetValue(SelectTop1000Property, value); }
+        }
+
+        /// <summary>
+        /// CompaniesForFundamenatalsText
+        /// </summary>
+        public string CompaniesForFundamenatalsText
+        {
+            get { return (string)GetValue(CompaniesForFundamenatalsTextProperty); }
+            set { SetValue(CompaniesForFundamenatalsTextProperty, value); }
         }
 
         #endregion
@@ -816,7 +828,7 @@ namespace IbDataTool
             sb.AppendLine($"{DbState.StocksTotal - DbState.CompaniesWoDocuments.Count()} stocks ready to analyze.");
             sb.AppendLine($"{DbState.CompaniesWoDocuments.Count()} stocks could be enriched with fundamental data.");
             sb.AppendLine();
-            
+
             sb.AppendLine("Step 1");
             sb.AppendLine($"For {DbState.CompaniesWoDocumentsIbSymbolNotResolvedNotUnique.Count()} IB symbol could be found.");
             sb.AppendLine();

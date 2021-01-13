@@ -201,7 +201,16 @@
                               Grid.Column="1"
                               Grid.Row="1"
                               VerticalAlignment="Center"
-                              IsChecked="{Binding SelectTop1000}"></CheckBox>
+                              IsChecked="{Binding SelectTop1000}">
+                    </CheckBox>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" 
+                       Grid.Row="2" Grid.RowSpan="4"
+                         VirtualizingStackPanel.IsVirtualizing="True" >
+                        <TextBox x:Name="txtCompaniesFund" 
+                            TextWrapping="Wrap"
+                            AcceptsReturn="True"
+                            Text="{Binding CompaniesForFundamenatalsText}"></TextBox>
+                    </ScrollViewer>
                     <Label Content="IB Port:"
                Grid.Column="2"
                Grid.Row="1"></Label>
