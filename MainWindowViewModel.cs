@@ -590,7 +590,7 @@ namespace IbDataTool
         {
             var companiesToProcess = CompaniesForFundamenatalsText.Split("\r\n").ToList();
             var contractsToProcessRaw = QueryFactory.ContractsByCompanyName.Run(companiesToProcess).ToList();
-            var contractsToProcess = contractsToProcessRaw.GroupBy(c => c.Company).Select(g => g.First()).ToList();
+            var contractsToProcess = contractsToProcessRaw.GroupBy(c => c.Company).Select(g => g.First()).OrderBy(c => c.Company).ToList();
             return contractsToProcess;
         }
 
