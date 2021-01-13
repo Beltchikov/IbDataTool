@@ -26,7 +26,7 @@ namespace IbDataTool.Queries
                     where ((stockIncome == null) || (stockIncomeBalance == null) || (stockIncomeBalanceCash == null))
                     && stockIncomeBalanceCashContract != null
                     && !string.IsNullOrWhiteSpace(stock.Name)
-                    select stock.Name).ToList();
+                    select stock.Name).Distinct().ToList();
         }
     }
 }
