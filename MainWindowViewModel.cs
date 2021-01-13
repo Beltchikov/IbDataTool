@@ -37,6 +37,7 @@ namespace IbDataTool
         public static readonly DependencyProperty ExchangeFmpInitialProperty;
         public static readonly DependencyProperty CompaniesForSymbolResolutionHeaderProperty;
         public static readonly DependencyProperty CompaniesForSymbolResolutionTextProperty;
+        public static readonly DependencyProperty DatesProperty;
 
         public RelayCommand CommandConnectToIb { get; set; }
         public RelayCommand CommandImportFundamentals { get; set; }
@@ -65,7 +66,8 @@ namespace IbDataTool
             ExchangeFmpInitialProperty = DependencyProperty.Register("ExchangeFmpInitial", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             CompaniesForSymbolResolutionHeaderProperty = DependencyProperty.Register("CompaniesForSymbolResolutionHeader", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
             CompaniesForSymbolResolutionTextProperty = DependencyProperty.Register("CompaniesForSymbolResolutionText", typeof(string), typeof(MainWindowViewModel), new PropertyMetadata(string.Empty));
-    }
+            DatesProperty = DependencyProperty.Register("Dates", typeof(ObservableCollection<string>), typeof(MainWindowViewModel), new PropertyMetadata(new ObservableCollection<string>()));
+        }
 
         public MainWindowViewModel()
         {
@@ -74,12 +76,13 @@ namespace IbDataTool
             LogSymbols.Add("Willkommen! Enjoy the day (-:");
             LogFundamentals.Add("Willkommen! Enjoy the day (-:");
             BackgroundLog = Brushes.White;
-            Date = "2019-12-31";
-            UpdateDbState();
-            InventoryText = GenerateInventoryText();
-
+            
+            InitDatesCombobok();
             InitExchangeCombobox();
             InitExchangeFmpCombobox();
+            
+            UpdateDbState();
+            InventoryText = GenerateInventoryText();
 
             CommandConnectToIb = new RelayCommand(async (p) => await CommandConnectToIbAsync(p));
             CommandImportContracts = new RelayCommand(async (p) => await CommandImportContractsAsync(p));
@@ -302,6 +305,15 @@ namespace IbDataTool
             set { SetValue(CompaniesForSymbolResolutionTextProperty, value); }
         }
 
+        /// <summary>
+        /// Dates
+        /// </summary>
+        public ObservableCollection<string> Dates
+        {
+            get { return (ObservableCollection<string>)GetValue(DatesProperty); }
+            set { SetValue(DatesProperty, value); }
+        }
+
         #endregion
 
         #region Commands
@@ -384,7 +396,7 @@ namespace IbDataTool
                 DataContext.Instance.SaveChanges();
                 LogCurrent.Add("OK! All contracts saved in database.");
                 IbClient.Instance.Disonnect();
-                
+
                 UpdateDbState();
                 InventoryText = GenerateInventoryText();
                 UpdateCompaniesForSymbolResolution(ExchangesFmpSelected);
@@ -499,7 +511,7 @@ namespace IbDataTool
                 if (!contracts.Any())
                 {
                     ProcessNotResolved();
-                    ProcessDatabaseBatch(); 
+                    ProcessDatabaseBatch();
                     return;
                 }
 
@@ -582,6 +594,13 @@ namespace IbDataTool
             }
 
             return true;
+        }
+
+        private void InitDatesCombobok()
+        {
+            var dates = Configuration.Instance["Dates"].Split(",").ToList();
+            Dates = new ObservableCollection<string>(dates.Select(e => e.Trim()).ToList());
+            Date = Configuration.Instance["SelectedDate"];
         }
 
         /// <summary>
@@ -797,7 +816,7 @@ namespace IbDataTool
             CompaniesForSymbolResolutionText = String.Empty;
             CompaniesForSymbolResolution = QueryFactory.CompaniesForSymbolResolutionQuery.Run(DbState.CompaniesWoDocumentsIbSymbolNotResolvedNotUnique, exchangesFmpSelected);
 
-            if(CompaniesForSymbolResolution.Any())
+            if (CompaniesForSymbolResolution.Any())
             {
                 CompaniesForSymbolResolutionText = CompaniesForSymbolResolution.Aggregate((r, n) => r + "\r\n" + n);
             }

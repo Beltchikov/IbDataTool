@@ -47,23 +47,12 @@
                    Grid.Row="1"
                    Grid.Column="3"
                HorizontalAlignment="Right"></Label>
-        <TextBox x:Name="txtDate" 
-               Text="{Binding Date}"
-                             Width="100"
-                             HorizontalAlignment="Left"
-                Grid.Column="4" 
+       <ComboBox x:Name="cmbYear" Grid.Column="4" 
                 Grid.Row="1" 
-                Margin="2,2,2,2"></TextBox>
-        <!--<ComboBox x:Name="cmbYear" Grid.Column="4" 
-                Grid.Row="1" SelectedItem="{Binding Date, UpdateSourceTrigger=PropertyChanged}"
+                  ItemsSource="{Binding Dates}"
+                  SelectedItem="{Binding Date}"
                   IsSynchronizedWithCurrentItem="True">
-            <ComboBoxItem>2019-12-31</ComboBoxItem>
-            <ComboBoxItem>2018-12-31</ComboBoxItem>
-            <ComboBoxItem>2017-12-31</ComboBoxItem>
-            <ComboBoxItem>2016-12-31</ComboBoxItem>
-            <ComboBoxItem>2015-12-31</ComboBoxItem>
-            <ComboBoxItem>2014-12-31</ComboBoxItem>
-        </ComboBox>-->
+        </ComboBox>
         <TabControl Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5">
             <TabItem Header="Inventory">
                 <Grid>
