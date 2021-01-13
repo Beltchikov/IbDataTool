@@ -788,6 +788,7 @@ namespace IbDataTool
             DbState.CompaniesWoDocuments = QueryFactory.CompaniesWoDocumentsQuery.Run(Date);
             DbState.CompaniesWoDocumentsAndIbSymbol = QueryFactory.CompaniesWoDocumentsAndIbSymbolQuery.Run(Date);
             DbState.CompaniesWoDocumentsIbSymbolNotResolvedNotUnique = QueryFactory.CompaniesWoDocumentsIbSymbolNotResolvedNotUniqueQuery.Run(Date);
+            DbState.CompaniesWoDocumentsButWithIbSymbol = QueryFactory.CompaniesWoDocumentsButWithIbSymbolQuery.Run(Date);
         }
 
         /// <summary>
@@ -797,13 +798,20 @@ namespace IbDataTool
         private string GenerateInventoryText()
         {
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"Summmary for {Date}:");
+            sb.AppendLine();
+
             sb.AppendLine($"Total {DbState.StocksTotal} stocks in database.");
-            sb.AppendLine();
             sb.AppendLine($"{DbState.StocksTotal - DbState.CompaniesWoDocuments.Count()} stocks ready to analyze.");
+            sb.AppendLine($"{DbState.CompaniesWoDocuments.Count()} stocks could be enriched with fundamental data.");
             sb.AppendLine();
-            sb.AppendLine($"{DbState.CompaniesWoDocuments.Count()} stocks without complete set of financial documents for the date {Date}.");
-            sb.AppendLine($"{DbState.CompaniesWoDocumentsAndIbSymbol.Count()} stocks without complete set of financial documents and without IB symbol (Table Contracts) for the date {Date}.");
-            sb.AppendLine($"{DbState.CompaniesWoDocumentsIbSymbolNotResolvedNotUnique.Count()} stocks without complete set of financial documents, without IB symbol and without entries in tables NotResolved, NotUnique for the date {Date}.");
+            
+            sb.AppendLine("Step 1");
+            sb.AppendLine($"For {DbState.CompaniesWoDocumentsIbSymbolNotResolvedNotUnique.Count()} IB symbol could be found.");
+            sb.AppendLine();
+            sb.AppendLine("Step 2");
+            sb.AppendLine($"For {DbState.CompaniesWoDocumentsButWithIbSymbol.Count()} stocks IB fundamental data could be found. (IB symbol exists already in the table Contracts)");
+
             return sb.ToString();
         }
 

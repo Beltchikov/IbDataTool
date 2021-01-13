@@ -28,5 +28,10 @@ namespace IbDataTool
         /// Companies without all set of financial documents, without IB symbol and without entries in table NotResolved, NotUnique.
         /// </summary>
         public static List<string> CompaniesWoDocumentsIbSymbolNotResolvedNotUnique { get; set; }
+
+        /// <summary>
+        /// CompaniesWoDocumentsButWithIbSymbol
+        /// </summary>
+        public static List<string> CompaniesWoDocumentsButWithIbSymbol { get; set; }
     }
 }
