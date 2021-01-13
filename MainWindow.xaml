@@ -51,7 +51,7 @@
        <ComboBox x:Name="cmbYear" Grid.Column="4" 
                 Grid.Row="1" 
                   ItemsSource="{Binding Dates}"
-                  SelectedItem="{Binding Date, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, diag:PresentationTraceSources.TraceLevel=High}"
+                  SelectedItem="{Binding Date, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                   IsSynchronizedWithCurrentItem="True">
         </ComboBox>
         <TabControl Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5">
