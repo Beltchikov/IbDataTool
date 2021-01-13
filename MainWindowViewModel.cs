@@ -589,7 +589,8 @@ namespace IbDataTool
         private List<Contract> ContractsForIbFundamentalsQueries()
         {
             var companiesToProcess = CompaniesForFundamenatalsText.Split("\r\n").ToList();
-            var contractsToProcess = QueryFactory.ContractsByCompanyName.Run(companiesToProcess).ToList();
+            var contractsToProcessRaw = QueryFactory.ContractsByCompanyName.Run(companiesToProcess).ToList();
+            var contractsToProcess = contractsToProcessRaw.GroupBy(c => c.Company).Select(g => g.First()).ToList();
             return contractsToProcess;
         }
 
