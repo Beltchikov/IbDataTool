@@ -803,7 +803,7 @@ namespace IbDataTool
             sb.AppendLine();
             sb.AppendLine($"{DbState.CompaniesWoDocuments.Count()} stocks without complete set of financial documents for the date {Date}.");
             sb.AppendLine($"{DbState.CompaniesWoDocumentsAndIbSymbol.Count()} stocks without complete set of financial documents and without IB symbol (Table Contracts) for the date {Date}.");
-            sb.AppendLine($"{DbState.CompaniesWoDocumentsIbSymbolNotResolvedNotUnique.Count()} stocks without complete set of financial documents, without IB symbol and without entries in NotResolved table for the date {Date}.");
+            sb.AppendLine($"{DbState.CompaniesWoDocumentsIbSymbolNotResolvedNotUnique.Count()} stocks without complete set of financial documents, without IB symbol and without entries in tables NotResolved, NotUnique for the date {Date}.");
             return sb.ToString();
         }
 
