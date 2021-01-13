@@ -473,6 +473,10 @@ namespace IbDataTool
             {
                 LogCurrent.Add($"OK! Import completed.");
                 IbClient.Instance.Disonnect();
+
+                UpdateDbState();
+                InventoryText = GenerateInventoryText();
+                UpdateCompaniesForFundamenatals(SelectTop1000);
             }
             else
             {
@@ -584,17 +588,8 @@ namespace IbDataTool
         /// <returns></returns>
         private List<Contract> ContractsForIbFundamentalsQueries()
         {
-            var companiesWithoutIncome = QueryFactory.CompaniesWithoutIncomeQuery.Run(Date);
-            var companiesWithoutBalance = QueryFactory.CompaniesWithoutBalanceQuery.Run(Date);
-            var companiesWithoutCash = QueryFactory.CompaniesWithoutCashQuery.Run(Date);
-
-            var companiesWithoutDocuments = companiesWithoutIncome.Union(companiesWithoutBalance).Union(companiesWithoutCash);
-            companiesWithoutDocuments = companiesWithoutDocuments.Where(c => !string.IsNullOrWhiteSpace(c)).ToList();
-
-            var companiesWithExactOneIbSymbol = QueryFactory.CompaniesWithExactOneIbSymbolQuery.Run();
-            var companiesToProcess = companiesWithoutDocuments.Intersect(companiesWithExactOneIbSymbol).ToList();
+            var companiesToProcess = CompaniesForFundamenatalsText.Split("\r\n").ToList();
             var contractsToProcess = QueryFactory.ContractsByCompanyName.Run(companiesToProcess).ToList();
-
             return contractsToProcess;
         }
 
@@ -874,11 +869,11 @@ namespace IbDataTool
             {
                 if (selectTop1000)
                 {
-                    CompaniesForFundamenatalsText = DbState.CompaniesWoDocumentsButWithIbSymbol.Aggregate((r, n) => r + "\r\n" + n);
+                    CompaniesForFundamenatalsText = DbState.CompaniesWoDocumentsButWithIbSymbol.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
                 }
                 else
                 {
-                    CompaniesForFundamenatalsText = DbState.CompaniesWoDocumentsButWithIbSymbol.Take(1000).Aggregate((r, n) => r + "\r\n" + n);
+                    CompaniesForFundamenatalsText = DbState.CompaniesWoDocumentsButWithIbSymbol.Aggregate((r, n) => r + "\r\n" + n);
                 }
             }
             else
