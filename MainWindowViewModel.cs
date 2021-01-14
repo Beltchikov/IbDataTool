@@ -81,7 +81,7 @@ namespace IbDataTool
             LogSymbols.Add("Willkommen! Enjoy the day (-:");
             LogFundamentals.Add("Willkommen! Enjoy the day (-:");
             BackgroundLog = Brushes.White;
-            
+
             InitDatesCombobok();
             InitExchangeCombobox();
             InitExchangeFmpCombobox();
@@ -565,7 +565,6 @@ namespace IbDataTool
 
             LogCurrent.Add($"Processing {CurrentContract.Company} ... {ContractList.Count()} companies more.");
             ContractList.Remove(CurrentContract);
-            FundamentalsXmlDocument xmlDocument = XmlFactory.Instance.CreateXml(obj, Date);
 
             string fmpSymbol = QueryFactory.SymbolByCompanyNameQuery.Run(CurrentContract.Company);
             if (string.IsNullOrWhiteSpace(fmpSymbol))
@@ -574,10 +573,14 @@ namespace IbDataTool
                 return;
             }
 
-            SaveIncomeStatement(CurrentContract, fmpSymbol, xmlDocument);
-            SaveBalanceSheet(CurrentContract, fmpSymbol, xmlDocument);
-            SaveCashFlowStatement(CurrentContract, fmpSymbol, xmlDocument);
+            foreach (string date in Dates)
+            {
+                FundamentalsXmlDocument xmlDocument = XmlFactory.Instance.CreateXml(obj, date);
+                SaveIncomeStatement(CurrentContract, fmpSymbol, xmlDocument, date);
+                SaveBalanceSheet(CurrentContract, fmpSymbol, xmlDocument, date);
+                SaveCashFlowStatement(CurrentContract, fmpSymbol, xmlDocument, date);
 
+            }
         }
 
         #endregion
@@ -708,27 +711,35 @@ namespace IbDataTool
         /// <param name="contract"></param>
         /// <param name="fmpSymbol"></param>
         /// <param name="xmlDocument"></param>
-        private void SaveIncomeStatement(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument)
+        /// <param name="date"></param>
+        private void SaveIncomeStatement(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument, string date)
         {
-            if (DataContext.Instance.IncomeStatements.Any(i => i.Symbol == fmpSymbol && i.Date == Date))
+            if (DataContext.Instance.IncomeStatements.Any(i => i.Symbol == fmpSymbol && i.Date == date))
             {
-                LogCurrent.Add($"Income statement for {contract.Company} already exists in database.");
+                LogCurrent.Add($"Income statement for {contract.Company} for year {date} already exists in database.");
+                return;
+            }
+
+            if(xmlDocument.Revenue == 0 && xmlDocument.OperatingIncome == 0 && xmlDocument.Eps == 0 && xmlDocument.NetIncome == 0)
+            {
+                LogCurrent.Add($"No IB data for income statement for {contract.Company} for year {date}.");
                 return;
             }
 
             var incomeStatement = new IncomeStatement()
             {
                 Symbol = fmpSymbol,
-                Date = Date,
-                Revenue = xmlDocument.Revenue(),
-                OperatingIncome = xmlDocument.OperatingIncome(),
-                Epsdiluted = xmlDocument.Eps(),
-                NetIncome = xmlDocument.NetIncome()
+                Date = date,
+                Revenue = xmlDocument.Revenue,
+                OperatingIncome = xmlDocument.OperatingIncome,
+                Epsdiluted = xmlDocument.Eps,
+                NetIncome = xmlDocument.NetIncome
             };
             try
             {
                 DataContext.Instance.IncomeStatements.Add(incomeStatement);
                 DataContext.Instance.SaveChanges();
+                LogCurrent.Add($"OK! Income statement for {contract.Company} {date} saved in database.");
             }
             catch (Exception exception)
             {
@@ -742,24 +753,32 @@ namespace IbDataTool
         /// <param name="contract"></param>
         /// <param name="fmpSymbol"></param>
         /// <param name="xmlDocument"></param>
-        private void SaveBalanceSheet(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument)
+        /// <param name="date"></param>
+        private void SaveBalanceSheet(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument, string date)
         {
-            if (DataContext.Instance.BalanceSheets.Any(i => i.Symbol == fmpSymbol && i.Date == Date))
+            if (DataContext.Instance.BalanceSheets.Any(i => i.Symbol == fmpSymbol && i.Date == date))
             {
-                LogCurrent.Add($"Balance sheet for {contract.Company} already exists in database.");
+                LogCurrent.Add($"Balance sheet for {contract.Company} ad date {date} already exists in database.");
+                return;
+            }
+
+            if (xmlDocument.Equity == 0)
+            {
+                LogCurrent.Add($"No IB data for balance sheet for {contract.Company} for year {date}.");
                 return;
             }
 
             var balanceSheet = new BalanceSheet()
             {
                 Symbol = fmpSymbol,
-                Date = Date,
-                TotalStockholdersEquity = xmlDocument.Equity()
+                Date = date,
+                TotalStockholdersEquity = xmlDocument.Equity
             };
             try
             {
                 DataContext.Instance.BalanceSheets.Add(balanceSheet);
                 DataContext.Instance.SaveChanges();
+                LogCurrent.Add($"OK! Balance sheet for {contract.Company} {date} saved in database.");
             }
             catch (Exception exception)
             {
@@ -767,32 +786,41 @@ namespace IbDataTool
             }
         }
 
+
         /// <summary>
         /// SaveCashFlowStatement
         /// </summary>
         /// <param name="contract"></param>
         /// <param name="fmpSymbol"></param>
         /// <param name="xmlDocument"></param>
-        private void SaveCashFlowStatement(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument)
+        /// <param name="date"></param>
+        private void SaveCashFlowStatement(Contract contract, string fmpSymbol, FundamentalsXmlDocument xmlDocument, string date)
         {
-            if (DataContext.Instance.CashFlowStatements.Any(i => i.Symbol == fmpSymbol && i.Date == Date))
+            if (DataContext.Instance.CashFlowStatements.Any(i => i.Symbol == fmpSymbol && i.Date == date))
             {
-                LogCurrent.Add($"Cash flow statement for {contract.Company} already exists in database.");
+                LogCurrent.Add($"Cash flow statement for {contract.Company} and date {date} already exists in database.");
+                return;
+            }
+
+            if (xmlDocument.NetIncomeFromCashStatement == 0  && xmlDocument.OperatingCashFlow == 0 && xmlDocument.InvestmentsInPropertyPlantAndEquipment == 0)
+            {
+                LogCurrent.Add($"No IB data for cash flow statement for {contract.Company} for year {date}.");
                 return;
             }
 
             var cashFlowStatement = new CashFlowStatement()
             {
                 Symbol = fmpSymbol,
-                Date = Date,
-                NetIncome = xmlDocument.NetIncomeFromCashStatement(),
-                OperatingCashFlow = xmlDocument.OperatingCashFlow(),
-                InvestmentsInPropertyPlantAndEquipment = xmlDocument.InvestmentsInPropertyPlantAndEquipment()
+                Date = date,
+                NetIncome = xmlDocument.NetIncomeFromCashStatement,
+                OperatingCashFlow = xmlDocument.OperatingCashFlow,
+                InvestmentsInPropertyPlantAndEquipment = xmlDocument.InvestmentsInPropertyPlantAndEquipment
             };
             try
             {
                 DataContext.Instance.CashFlowStatements.Add(cashFlowStatement);
                 DataContext.Instance.SaveChanges();
+                LogCurrent.Add($"OK! Cash flow statement for {contract.Company} {date} saved in database.");
             }
             catch (Exception exception)
             {
@@ -865,7 +893,7 @@ namespace IbDataTool
         private void UpdateCompaniesForFundamenatals(bool selectTop1000)
         {
             CompaniesForFundamenatalsText = String.Empty;
-            
+
             if (DbState.CompaniesWoDocumentsButWithIbSymbol.Any())
             {
                 if (selectTop1000)

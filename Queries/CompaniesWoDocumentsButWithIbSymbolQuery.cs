@@ -22,7 +22,7 @@ namespace IbDataTool.Queries
                     from stockIncomeBalanceCash in stockIncomeBalanceCashRecords.DefaultIfEmpty()
                     join contract in Contracts
                     on stock.Name equals contract.Company into stockIncomeBalanceCashContractRecords
-                    from stockIncomeBalanceCashContract in stockIncomeBalanceCashContractRecords.DefaultIfEmpty()
+                    from stockIncomeBalanceCashContract in stockIncomeBalanceCashContractRecords
                     where ((stockIncome == null) || (stockIncomeBalance == null) || (stockIncomeBalanceCash == null))
                     && stockIncomeBalanceCashContract != null
                     && !string.IsNullOrWhiteSpace(stock.Name)

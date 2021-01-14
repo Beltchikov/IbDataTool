@@ -32,28 +32,31 @@ namespace IbDataTool.Model
         /// NetIncome
         /// </summary>
         /// <returns></returns>
-        public double NetIncome()
+        public double NetIncome
         {
-            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+            get
+            {
+                string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
                             FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
                             Statement[@Type='INC']//lineItem[@coaCode='NINC']";
-            xPath = xPath.Replace("@@date", _date);
-            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+                xPath = xPath.Replace("@@date", _date);
+                xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
 
-            var lineItems = DocumentElement.SelectNodes(xPath);
-            if (lineItems.Count != 1)
-            {
-                return 0d;
-            }
+                var lineItems = DocumentElement.SelectNodes(xPath);
+                if (lineItems.Count != 1)
+                {
+                    return 0d;
+                }
 
-            try
-            {
-                return Convert.ToDouble(lineItems[0].InnerText, _culture);
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    return Convert.ToDouble(lineItems[0].InnerText, _culture);
+                }
+                catch (Exception)
+                {
 
-                return 0d;
+                    return 0d;
+                }
             }
         }
 
@@ -61,28 +64,31 @@ namespace IbDataTool.Model
         /// Revenue
         /// </summary>
         /// <returns></returns>
-        public double Revenue()
+        public double Revenue
         {
-            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+            get
+            {
+                string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
                             FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
                             Statement[@Type='INC']//lineItem[@coaCode='SREV']";
-            xPath = xPath.Replace("@@date", _date);
-            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+                xPath = xPath.Replace("@@date", _date);
+                xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
 
-            var lineItems = DocumentElement.SelectNodes(xPath);
-            if (lineItems.Count != 1)
-            {
-                return 0d;
-            }
+                var lineItems = DocumentElement.SelectNodes(xPath);
+                if (lineItems.Count != 1)
+                {
+                    return 0d;
+                }
 
-            try
-            {
-                return Convert.ToDouble(lineItems[0].InnerText, _culture);
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    return Convert.ToDouble(lineItems[0].InnerText, _culture);
+                }
+                catch (Exception)
+                {
 
-                return 0d;
+                    return 0d;
+                }
             }
         }
 
@@ -90,28 +96,31 @@ namespace IbDataTool.Model
         /// OperatingIncome
         /// </summary>
         /// <returns></returns>
-        public double OperatingIncome()
+        public double OperatingIncome
         {
-            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+            get
+            {
+                string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
                             FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
                             Statement[@Type='INC']//lineItem[@coaCode='SOPI']";
-            xPath = xPath.Replace("@@date", _date);
-            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+                xPath = xPath.Replace("@@date", _date);
+                xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
 
-            var lineItems = DocumentElement.SelectNodes(xPath);
-            if (lineItems.Count != 1)
-            {
-                return 0d;
-            }
+                var lineItems = DocumentElement.SelectNodes(xPath);
+                if (lineItems.Count != 1)
+                {
+                    return 0d;
+                }
 
-            try
-            {
-                return Convert.ToDouble(lineItems[0].InnerText, _culture);
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    return Convert.ToDouble(lineItems[0].InnerText, _culture);
+                }
+                catch (Exception)
+                {
 
-                return 0d;
+                    return 0d;
+                }
             }
         }
 
@@ -119,28 +128,31 @@ namespace IbDataTool.Model
         /// Eps
         /// </summary>
         /// <returns></returns>
-        public double Eps()
+        public double Eps
         {
-            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+            get
+            {
+                string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
                             FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
                             Statement[@Type='INC']//lineItem[@coaCode='VDES']";
-            xPath = xPath.Replace("@@date", _date);
-            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+                xPath = xPath.Replace("@@date", _date);
+                xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
 
-            var lineItems = DocumentElement.SelectNodes(xPath);
-            if (lineItems.Count != 1)
-            {
-                return 0d;
-            }
+                var lineItems = DocumentElement.SelectNodes(xPath);
+                if (lineItems.Count != 1)
+                {
+                    return 0d;
+                }
 
-            try
-            {
-                return Convert.ToDouble(lineItems[0].InnerText, _culture);
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    return Convert.ToDouble(lineItems[0].InnerText, _culture);
+                }
+                catch (Exception)
+                {
 
-                return 0d;
+                    return 0d;
+                }
             }
         }
 
@@ -148,28 +160,31 @@ namespace IbDataTool.Model
         /// Equity
         /// </summary>
         /// <returns></returns>
-        public double Equity()
+        public double Equity
         {
-            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+            get
+            {
+                string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
                             FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
                             Statement[@Type='BAL']//lineItem[@coaCode='QTLE']";
-            xPath = xPath.Replace("@@date", _date);
-            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+                xPath = xPath.Replace("@@date", _date);
+                xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
 
-            var lineItems = DocumentElement.SelectNodes(xPath);
-            if (lineItems.Count != 1)
-            {
-                return 0d;
-            }
+                var lineItems = DocumentElement.SelectNodes(xPath);
+                if (lineItems.Count != 1)
+                {
+                    return 0d;
+                }
 
-            try
-            {
-                return Convert.ToDouble(lineItems[0].InnerText, _culture);
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    return Convert.ToDouble(lineItems[0].InnerText, _culture);
+                }
+                catch (Exception)
+                {
 
-                return 0d;
+                    return 0d;
+                }
             }
         }
 
@@ -177,28 +192,31 @@ namespace IbDataTool.Model
         /// NetIncomeFromCashStatement
         /// </summary>
         /// <returns></returns>
-        public double NetIncomeFromCashStatement()
+        public double NetIncomeFromCashStatement
         {
-            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+            get
+            {
+                string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
                             FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
                             Statement[@Type='CAS']//lineItem[@coaCode='ONET']";
-            xPath = xPath.Replace("@@date", _date);
-            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+                xPath = xPath.Replace("@@date", _date);
+                xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
 
-            var lineItems = DocumentElement.SelectNodes(xPath);
-            if (lineItems.Count != 1)
-            {
-                return 0d;
-            }
+                var lineItems = DocumentElement.SelectNodes(xPath);
+                if (lineItems.Count != 1)
+                {
+                    return 0d;
+                }
 
-            try
-            {
-                return Convert.ToDouble(lineItems[0].InnerText, _culture);
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    return Convert.ToDouble(lineItems[0].InnerText, _culture);
+                }
+                catch (Exception)
+                {
 
-                return 0d;
+                    return 0d;
+                }
             }
         }
 
@@ -206,28 +224,31 @@ namespace IbDataTool.Model
         /// OperatingCashFlow
         /// </summary>
         /// <returns></returns>
-        public double OperatingCashFlow()
+        public double OperatingCashFlow
         {
-            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+            get
+            {
+                string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
                             FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
                             Statement[@Type='CAS']//lineItem[@coaCode='OTLO']";
-            xPath = xPath.Replace("@@date", _date);
-            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+                xPath = xPath.Replace("@@date", _date);
+                xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
 
-            var lineItems = DocumentElement.SelectNodes(xPath);
-            if (lineItems.Count != 1)
-            {
-                return 0d;
-            }
+                var lineItems = DocumentElement.SelectNodes(xPath);
+                if (lineItems.Count != 1)
+                {
+                    return 0d;
+                }
 
-            try
-            {
-                return Convert.ToDouble(lineItems[0].InnerText, _culture);
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    return Convert.ToDouble(lineItems[0].InnerText, _culture);
+                }
+                catch (Exception)
+                {
 
-                return 0d;
+                    return 0d;
+                }
             }
         }
 
@@ -235,28 +256,31 @@ namespace IbDataTool.Model
         /// InvestmentsInPropertyPlantAndEquipment
         /// </summary>
         /// <returns></returns>
-        public double InvestmentsInPropertyPlantAndEquipment()
+        public double InvestmentsInPropertyPlantAndEquipment
         {
-            string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
+            get
+            {
+                string xPath = @"/ReportFinancialStatements[@Major='1']/FinancialStatements/AnnualPeriods/
                             FiscalPeriod[@Type='Annual' and @EndDate='@@date' and @FiscalYear='@@year']/
                             Statement[@Type='CAS']//lineItem[@coaCode='SCEX']";
-            xPath = xPath.Replace("@@date", _date);
-            xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
+                xPath = xPath.Replace("@@date", _date);
+                xPath = xPath.Replace("@@year", Convert.ToString(_date[..4]));
 
-            var lineItems = DocumentElement.SelectNodes(xPath);
-            if (lineItems.Count != 1)
-            {
-                return 0d;
-            }
+                var lineItems = DocumentElement.SelectNodes(xPath);
+                if (lineItems.Count != 1)
+                {
+                    return 0d;
+                }
 
-            try
-            {
-                return Convert.ToDouble(lineItems[0].InnerText, _culture);
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    return Convert.ToDouble(lineItems[0].InnerText, _culture);
+                }
+                catch (Exception)
+                {
 
-                return 0d;
+                    return 0d;
+                }
             }
         }
     }
